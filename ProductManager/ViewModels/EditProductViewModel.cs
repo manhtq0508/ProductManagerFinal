@@ -7,37 +7,36 @@ using ProductManager.Messages;
 
 namespace ProductManager.ViewModels;
 
-[QueryProperty(nameof(StoreId), "storeId")]
-public partial class EditStoreViewModel : ObservableObject
+[QueryProperty(nameof(ProductId), "productId")]
+public partial class EditProductViewModel : ObservableObject
 {
-    private IStoreRepo _storeRepo;
+    private IProductRepo _productRepo;
 
     [ObservableProperty]
-    private Store? storeNeedEdited;
+    private Product? productNeedEdit;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(StoreNeedEdited))]
-    private string? storeId;
+    [NotifyPropertyChangedFor(nameof(ProductNeedEdit))]
+    private string? productId;
 
-    public EditStoreViewModel(IStoreRepo storeRepo)
+    public EditProductViewModel(IProductRepo productRepo)
     {
-        _storeRepo = storeRepo;
+        _productRepo = productRepo;
     }
 
-    // Call when storeId is changed
-    partial void OnStoreIdChanged(string? value)
+    partial void OnProductIdChanged(string? value)
     {
-        if (!string.IsNullOrEmpty(value))
+        if (value != null)
         {
-            LoadStoreAsync(value);
+            LoadProduct(value);
         }
     }
 
-    private async void LoadStoreAsync(string id)
+    private async void LoadProduct(string id)
     {
         try
         {
-            StoreNeedEdited = await _storeRepo.GetStoreByIdAsync(id);
+            ProductNeedEdit = await _productRepo.GetProductByIdAsync(id);
         }
         catch (Exception ex)
         {
@@ -46,17 +45,15 @@ public partial class EditStoreViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task SaveStoreAsync()
+    private async Task SaveProduct()
     {
-        if (StoreNeedEdited == null)
+        if (ProductNeedEdit == null)
             return;
 
         try
         {
-            await _storeRepo.UpdateStoreAsync(StoreNeedEdited);
-
-            WeakReferenceMessenger.Default.Send(new StoreEditedMessage(StoreNeedEdited));
-
+            await _productRepo.UpdateProductAsync(ProductNeedEdit);
+            WeakReferenceMessenger.Default.Send(new ProductEditedMessage(ProductNeedEdit));
             await Shell.Current.GoToAsync("..");
         }
         catch (Exception ex)

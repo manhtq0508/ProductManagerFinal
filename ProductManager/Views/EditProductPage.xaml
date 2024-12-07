@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProductManager.Views.EditProductPage"
+             xmlns:viewmodel="clr-namespace:ProductManager.ViewModels"
+             x:DataType="viewmodel:EditProductViewModel"
+             Shell.NavBarIsVisible="False">
+    <ScrollView>
+        <Grid
+            RowDefinitions="Auto, *"
+            Padding="20">
+            <Label
+                Text="Edit Product" 
+                FontAttributes="Bold"
+                FontSize="Large"
+                Grid.Row="0"/>
+            <VerticalStackLayout
+                Spacing="30"
+                VerticalOptions="CenterAndExpand"
+                Grid.Row="1">
+                <Grid
+                    WidthRequest="500"
+                    RowDefinitions="44, Auto, Auto"
+                    RowSpacing="10"
+                    ColumnDefinitions="Auto, *"
+                    ColumnSpacing="10">
+                    <Label
+                        Text="ID:"
+                        VerticalOptions="Center"
+                        Grid.Row="0"
+                        Grid.Column="0"/>
+                    <Label
+                        Text="{Binding ProductNeedEdit.Id}"
+                        VerticalOptions="Center"
+                        Grid.Row="0"
+                        Grid.Column="1" />
+                    <Label
+                        Text="Name:"
+                        VerticalOptions="Center"
+                        Grid.Row="1"
+                        Grid.Column="0" />
+                    <Entry
+                        Text="{Binding ProductNeedEdit.Name}"
+                        Grid.Row="1"
+                        Grid.Column="1" />
+                    <Label
+                        Text="Price:"
+                        VerticalOptions="Center"
+                        Grid.Row="2"
+                        Grid.Column="0" />
+                    <Entry
+                        Text="{Binding ProductNeedEdit.Price}"
+                        Grid.Row="2"
+                        Grid.Column="1" />
+                </Grid>
+                <HorizontalStackLayout
+                    HorizontalOptions="Center"
+                    Spacing="20">
+                    <Button
+                        Text="Add"
+                        Command="{Binding SaveProductCommand}"
+                        WidthRequest="120" />
+                    <Button
+                        Text="Cancel"
+                        Command="{Binding CancelCommand}"
+                        WidthRequest="120" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
+</ContentPage>

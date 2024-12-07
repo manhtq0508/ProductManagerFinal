@@ -31,6 +31,10 @@ public static class ApplicationServiceExtension
         // Product
         services.AddTransient<ProductPage>();
         services.AddTransient<ProductViewModel>();
+        services.AddTransient<AddProductPage>();
+        services.AddTransient<AddProductViewModel>();
+        services.AddTransient<EditProductPage>();
+        services.AddTransient<EditProductViewModel>();
 
         return services;
     }

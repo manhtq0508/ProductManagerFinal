@@ -59,7 +59,6 @@ public partial class StoreViewModel : ObservableObject
     private async Task AddStore()
     {
         await Shell.Current.GoToAsync(nameof(AddStorePage));
-        await LoadStoresAsync();
     }
 
     [RelayCommand]

@@ -28,6 +28,18 @@ public class ProductRepo(DatabaseService dbService) : IProductRepo
         await dbService.AppDbContext.SaveChangesAsync();
     }
 
+    public async Task<Product> GetProductByIdAsync(string id)
+    {
+        var product = await dbService.AppDbContext.Products
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == id);
+        
+        if (product == null)
+            throw new Exception("Product not found");
+
+        return product;
+    }
+
     public async Task<IEnumerable<Product>> GetProductsAsync()
     {
         return await dbService.AppDbContext.Products

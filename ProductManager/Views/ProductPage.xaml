@@ -79,6 +79,7 @@
 
         <CollectionView
             ItemsSource="{Binding Products}"
+            SelectedItem="{Binding SelectedProduct}"
             SelectionMode="Single"
             Grid.Row="3">
             <CollectionView.ItemTemplate>
