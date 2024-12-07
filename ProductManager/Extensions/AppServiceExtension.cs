@@ -4,7 +4,7 @@ using ProductManager.Services;
 using ProductManager.ViewModels;
 using ProductManager.Views;
 
-namespace IT008_ProductManager.Extensions;
+namespace ProductManager.Extensions;
 
 public static class ApplicationServiceExtension
 {

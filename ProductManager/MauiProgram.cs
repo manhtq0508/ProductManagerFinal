@@ -1,4 +1,4 @@
-﻿using IT008_ProductManager.Extensions;
+﻿using ProductManager.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace ProductManager
@@ -19,6 +19,7 @@ namespace ProductManager
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
+
             builder.Services.AddApplicationServices();
 
             return builder.Build();
