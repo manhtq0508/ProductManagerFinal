@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProductManager.Views.MainPage"
+             xmlns:viewmodel="clr-namespace:ProductManager.ViewModels"
+             x:DataType="viewmodel:MainViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <ScrollView>
+        <VerticalStackLayout
+            HorizontalOptions="CenterAndExpand"
+            VerticalOptions="CenterAndExpand"
+            Spacing="20"
+            Padding="20">
+            <Label
+                Text="Welcome"
+                HorizontalOptions="CenterAndExpand"
+                FontAttributes="Bold"
+                FontSize="Header"/>
+            <HorizontalStackLayout
+                Spacing="25">
+                <VerticalStackLayout
+                    Spacing="10">
+                    <Border
+                        BackgroundColor="Transparent"
+                        StrokeThickness="0"
+                        Stroke="Transparent"
+                        StrokeShape="RoundRectangle 20">
+                        <ImageButton
+                            Source="store.png"
+                            Command="{Binding OpenStoresCommand}"
+                            Padding="20"
+                            WidthRequest="200"
+                            HeightRequest="200"/>
+                    </Border>
+                    <Label
+                        Text="Stores"
+                        HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout
+                    Spacing="10">
+                    <Border
+                        BackgroundColor="Transparent"
+                        Stroke="Transparent"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 20">
+                        <ImageButton
+                            Source="products.png"
+                            Command="{Binding OpenProductsCommand}"
+                            Padding="20"
+                            WidthRequest="200"
+                            HeightRequest="200"/>
+                    </Border>
+                    <Label
+                        Text="Products"
+                        HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout
+                HorizontalOptions="CenterAndExpand"
+                Spacing="30">
+                <Button
+                    Text="Import from Excel" 
+                    Command="{Binding ImportFromFileCommand}"
+                    WidthRequest="200"/>
+
+                <Button
+                    Text="Export to file"
+                    WidthRequest="200" />
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout
+                Spacing="10"
+                HorizontalOptions="CenterAndExpand">
+                <BoxView
+                    HeightRequest="1"
+                    WidthRequest="150"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" />
+                <Label
+                    Text="OR" 
+                    TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}"/>
+                <BoxView
+                    HeightRequest="1"
+                    WidthRequest="150"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" />
+            </HorizontalStackLayout>
+            
+            <Button
+                Text="Generate demo data" 
+                Command="{Binding GenDemoDataCommand}"
+                WidthRequest="200" />
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

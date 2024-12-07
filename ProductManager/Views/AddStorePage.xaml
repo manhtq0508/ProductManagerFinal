@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProductManager.Views.AddStorePage"
+             xmlns:viewmodel="clr-namespace:ProductManager.ViewModels"
+             x:DataType="viewmodel:AddStoreViewModel"
+             Shell.NavBarIsVisible="False">
+    <ScrollView>
+        <Grid
+            RowDefinitions="Auto, *"
+            Padding="20">
+            <Label
+                Text="Add Store" 
+                FontAttributes="Bold"
+                FontSize="Large"
+                Grid.Row="0"/>
+            <VerticalStackLayout
+                Spacing="30"
+                VerticalOptions="CenterAndExpand"
+                Grid.Row="1">
+                <Grid
+                    WidthRequest="500"
+                    RowDefinitions="Auto, Auto, Auto"
+                    RowSpacing="10"
+                    ColumnDefinitions="Auto, *"
+                    ColumnSpacing="10">
+                    <Label
+                        Text="ID:"
+                        VerticalOptions="Center"
+                        Grid.Row="0"
+                        Grid.Column="0"/>
+                    <Entry
+                        Text="{Binding StoreId}"
+                        Grid.Row="0"
+                        Grid.Column="1" />
+                    <Label
+                        Text="Name:"
+                        VerticalOptions="Center"
+                        Grid.Row="1"
+                        Grid.Column="0" />
+                    <Entry
+                        Text="{Binding StoreName}"
+                        Grid.Row="1"
+                        Grid.Column="1" />
+                    <Label
+                        Text="Address:"
+                        VerticalOptions="Center"
+                        Grid.Row="2"
+                        Grid.Column="0" />
+                    <Entry
+                        Text="{Binding StoreAddress}"
+                        Grid.Row="2"
+                        Grid.Column="1" />
+                </Grid>
+                <HorizontalStackLayout
+                    HorizontalOptions="Center"
+                    Spacing="20">
+                    <Button
+                        Text="Add"
+                        Command="{Binding AddStoreCommand}"
+                        WidthRequest="120" />
+                    <Button
+                        Text="Cancel"
+                        Command="{Binding CancelCommand}"
+                        WidthRequest="120" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
+</ContentPage>
