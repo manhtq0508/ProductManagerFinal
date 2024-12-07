@@ -9,7 +9,9 @@ public class StoreRepo(DatabaseService dbService) : IStoreRepo
 {
     public async Task AddStoreAsync(Store store)
     {
-        var isIdExist = await dbService.AppDbContext.Stores.AnyAsync(s => s.Id == store.Id);
+        var isIdExist = await dbService.AppDbContext.Stores
+            .AsNoTracking()
+            .AnyAsync(s => s.Id == store.Id);
 
         if (isIdExist)
         {
@@ -28,7 +30,10 @@ public class StoreRepo(DatabaseService dbService) : IStoreRepo
 
     public async Task<Store> GetStoreByIdAsync(string id)
     {
-        var store = await dbService.AppDbContext.Stores.FirstOrDefaultAsync(s => s.Id == id);
+        var store = await dbService.AppDbContext.Stores
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == id);
+
         if (store == null)
         {
             throw new Exception("Store not found");
@@ -39,12 +44,22 @@ public class StoreRepo(DatabaseService dbService) : IStoreRepo
 
     public async Task<IEnumerable<Store>> GetStoresAsync()
     {
-        return await dbService.AppDbContext.Stores.ToListAsync();
+        return await dbService.AppDbContext.Stores
+            .AsNoTracking()
+            .ToListAsync();
     }
 
     public async Task UpdateStoreAsync(Store store)
     {
-        dbService.AppDbContext.Stores.Update(store);
+        var existingStore = await dbService.AppDbContext.Stores
+            .FirstOrDefaultAsync(s => s.Id == store.Id);
+
+        if (existingStore == null)
+            throw new Exception("Store not found");
+
+        existingStore.Name = store.Name;
+        existingStore.Address = store.Address;
+
         await dbService.AppDbContext.SaveChangesAsync();
     }
 }

@@ -26,6 +26,7 @@ public partial class StoreViewModel : ObservableObject
 
         // Register to receive messages
         WeakReferenceMessenger.Default.Register<StoreAddedMessage>(this, (r, m) => OnStoreAdded(m.newStore));
+        WeakReferenceMessenger.Default.Register<StoreEditedMessage>(this, async (r, m) => await OnStoreEdited(m.editedStore));
     }
 
     private async Task LoadStoresAsync()
@@ -47,6 +48,11 @@ public partial class StoreViewModel : ObservableObject
             Stores = new ObservableCollection<Store>();
 
         Stores.Add(newStore);
+    }
+
+    private async Task OnStoreEdited(Store editedStore)
+    {
+        await LoadStoresAsync();
     }
 
     [RelayCommand]
@@ -71,11 +77,29 @@ public partial class StoreViewModel : ObservableObject
     [RelayCommand]
     private async Task DeleteStore()
     {
+        if (SelectedStore == null)
+        {
+            await Shell.Current.DisplayAlert("Error", "Please select a store to delete", "OK");
+            return;
+        }
+
+        try
+        {
+            if (Stores == null)
+                return;
+
+            await _storeRepo.DeleteStoreAsync(SelectedStore);
+            Stores.Remove(SelectedStore);
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
+        }
     }
 
     [RelayCommand]
     private async Task ViewBills()
     {
-
+        
     }
 }

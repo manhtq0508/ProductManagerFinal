@@ -9,7 +9,9 @@ public class BillRepo(DatabaseService dbService) : IBillRepo
 {
     public async Task AddBillAsync(Bill bill)
     {
-        var isIdExist = await dbService.AppDbContext.Bills.AnyAsync(b => b.Id == bill.Id);
+        var isIdExist = await dbService.AppDbContext.Bills
+            .AsNoTracking()
+            .AnyAsync(b => b.Id == bill.Id);
         if (isIdExist)
         {
             throw new Exception("Bill Id is already exist");
@@ -34,12 +36,21 @@ public class BillRepo(DatabaseService dbService) : IBillRepo
 
         return await dbService.AppDbContext.Bills
             .Where(b => b.StoreId == storeId)
+            .AsNoTracking()
             .ToListAsync();
     }
 
     public async Task UpdateBillAsync(Bill bill)
     {
-        dbService.AppDbContext.Bills.Update(bill);
+        var existingBill = await dbService.AppDbContext.Bills
+            .FirstOrDefaultAsync(b => b.Id == bill.Id);
+
+        if (existingBill == null)
+            throw new Exception("Bill not found");
+
+        existingBill.StoreId = bill.StoreId;
+        existingBill.Date = bill.Date;
+
         await dbService.AppDbContext.SaveChangesAsync();
     }
 }

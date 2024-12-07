@@ -1,5 +1,5 @@
-﻿namespace ProductManager.Messages;
+﻿using ProductManager.Entities;
 
-internal class StoreEditedMessage
-{
-}
+namespace ProductManager.Messages;
+
+public record StoreEditedMessage(Store editedStore);

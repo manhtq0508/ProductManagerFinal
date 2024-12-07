@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using ProductManager.Entities;
 using ProductManager.Interfaces;
+using ProductManager.Messages;
 
 namespace ProductManager.ViewModels;
 
@@ -52,10 +54,10 @@ public partial class EditStoreViewModel : ObservableObject
         try
         {
             await _storeRepo.UpdateStoreAsync(StoreNeedEdited);
-            await Shell.Current.GoToAsync("..");
 
-            StoreNeedEdited = null;
-            StoreId = null;
+            WeakReferenceMessenger.Default.Send(new StoreEditedMessage(StoreNeedEdited));
+
+            await Shell.Current.GoToAsync("..");
         }
         catch (Exception ex)
         {

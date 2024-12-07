@@ -9,7 +9,9 @@ public class ProductRepo(DatabaseService dbService) : IProductRepo
 {
     public async Task AddProductAsync(Product product)
     {
-        var isIdExist = await dbService.AppDbContext.Products.AnyAsync(p => p.Id == product.Id);
+        var isIdExist = await dbService.AppDbContext.Products
+            .AsNoTracking()
+            .AnyAsync(p => p.Id == product.Id);
         
         if (isIdExist)
         {
@@ -28,12 +30,22 @@ public class ProductRepo(DatabaseService dbService) : IProductRepo
 
     public async Task<IEnumerable<Product>> GetProductsAsync()
     {
-        return await dbService.AppDbContext.Products.ToListAsync();
+        return await dbService.AppDbContext.Products
+            .AsNoTracking()
+            .ToListAsync();
     }
 
     public async Task UpdateProductAsync(Product product)
     {
-        dbService.AppDbContext.Products.Update(product);
+        var existingProduct = await dbService.AppDbContext.Products
+            .FirstOrDefaultAsync(p => p.Id == product.Id);
+
+        if (existingProduct == null)
+            throw new Exception("Product not found");
+
+        existingProduct.Name = product.Name;
+        existingProduct.Price = product.Price;
+
         await dbService.AppDbContext.SaveChangesAsync();
     }
 }
