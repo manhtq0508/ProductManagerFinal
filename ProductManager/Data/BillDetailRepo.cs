@@ -7,33 +7,45 @@ namespace ProductManager.Data;
 
 public class BillDetailRepo(DatabaseService dbService) : IBillDetailRepo
 {
-    public async Task AddProductAsync(string billId, string productId, int quantity)
+    private async Task<bool> CheckBillDetailValid(BillDetail billDetail)
     {
-        var isBillExist = await dbService.AppDbContext.Bills
-            .AsNoTracking()
-            .AnyAsync(b => b.Id == billId);
-        if (!isBillExist)
-        {
-            throw new Exception("Bill is not found");
-        }
+        var isBillDetailExist = await dbService.AppDbContext.BillDetails
+            .AnyAsync(bd => bd.BillId == billDetail.BillId && bd.ProductId == billDetail.ProductId);
+
+        if (isBillDetailExist)
+            throw new Exception("Bill detail is existed");
 
         var isProductExist = await dbService.AppDbContext.Products
-            .AsNoTracking()
-            .AnyAsync(p => p.Id == productId);
+            .AnyAsync(p => p.Id == billDetail.ProductId);
+
         if (!isProductExist)
+            throw new Exception("Product does not exist");
+
+        var isBillExist = await dbService.AppDbContext.Bills
+            .AnyAsync(b => b.Id == billDetail.BillId);
+
+        if (!isBillExist)
+            throw new Exception("Bill does not exist");
+
+        return true;
+    }
+    public async Task AddListBillDetailAsync(List<BillDetail> billDetails)
+    {
+        foreach (var billDetail in billDetails)
         {
-            throw new Exception("Product is not found");
+            if (!await CheckBillDetailValid(billDetail))
+                return;
         }
 
-        await dbService.AppDbContext.BillDetails.AddAsync(
-            new BillDetail
-            {
-                BillId = billId,
-                ProductId = productId,
-                Quantity = quantity
-            }
-        );
+        await dbService.AppDbContext.BillDetails.AddRangeAsync(billDetails);
+        await dbService.AppDbContext.SaveChangesAsync();
+    }
 
+    public async Task AddBillDetailAsync(BillDetail billDetail)
+    {
+        if (!await CheckBillDetailValid(billDetail)) { return; }
+
+        await dbService.AppDbContext.BillDetails.AddAsync(billDetail);
         await dbService.AppDbContext.SaveChangesAsync();
     }
 
@@ -55,6 +67,14 @@ public class BillDetailRepo(DatabaseService dbService) : IBillDetailRepo
             .Where(bd => bd.BillId == billId)
             .AsNoTracking()
             .ToListAsync();
+    }
+
+    public async Task<long> GetTotalOfAllBillsAsync()
+    {
+        var total = await dbService.AppDbContext.BillDetails
+            .SumAsync(bd => bd.Quantity * bd.Product.Price);
+
+        return total;
     }
 
     public async Task UpdateProductQuantityAsync(string billId, string productId, int newQuantity)

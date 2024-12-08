@@ -1,12 +1,30 @@
-﻿using ProductManager.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using ProductManager.Entities;
 using ProductManager.Interfaces;
 using ProductManager.Services;
-using Microsoft.EntityFrameworkCore;
 
 namespace ProductManager.Data;
 
 public class StoreRepo(DatabaseService dbService) : IStoreRepo
 {
+    public async Task AddListStoresAsync(List<Store> stores)
+    {
+        foreach (var store in stores)
+        {
+            var isIdExist = await dbService.AppDbContext.Stores
+                .AsNoTracking()
+                .AnyAsync(s => s.Id == store.Id);
+
+            if (isIdExist)
+            {
+                throw new Exception("Store id already exists");
+            }
+        }
+
+        await dbService.AppDbContext.AddRangeAsync(stores);
+        await dbService.AppDbContext.SaveChangesAsync();
+    }
+
     public async Task AddStoreAsync(Store store)
     {
         var isIdExist = await dbService.AppDbContext.Stores
@@ -15,7 +33,7 @@ public class StoreRepo(DatabaseService dbService) : IStoreRepo
 
         if (isIdExist)
         {
-            throw new Exception("Store Id is already exist");
+            throw new Exception("Store id already exists");
         }
 
         await dbService.AppDbContext.Stores.AddAsync(store);
@@ -24,6 +42,7 @@ public class StoreRepo(DatabaseService dbService) : IStoreRepo
 
     public async Task DeleteStoreAsync(Store store)
     {
+        dbService.AppDbContext.Stores.Attach(store);
         dbService.AppDbContext.Remove(store);
         await dbService.AppDbContext.SaveChangesAsync();
     }

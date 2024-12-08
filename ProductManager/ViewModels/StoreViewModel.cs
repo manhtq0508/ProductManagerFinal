@@ -12,6 +12,7 @@ namespace ProductManager.ViewModels;
 public partial class StoreViewModel : ObservableObject
 {
     private IStoreRepo _storeRepo;
+    private IBillDetailRepo _billDetailRepo; // To calculate revenue
 
     [ObservableProperty]
     private ObservableCollection<Store>? stores;
@@ -19,14 +20,25 @@ public partial class StoreViewModel : ObservableObject
     [ObservableProperty]
     private Store? selectedStore;
 
-    public StoreViewModel(IStoreRepo storeRepo)
+    [ObservableProperty]
+    private long? revenue;
+
+    public StoreViewModel(IStoreRepo storeRepo, IBillDetailRepo billDetailRepo)
     {
         _storeRepo = storeRepo;
+        _billDetailRepo = billDetailRepo;
+
         LoadStoresAsync().Wait();
+        CalculateRevenue().Wait();
 
         // Register to receive messages
         WeakReferenceMessenger.Default.Register<StoreAddedMessage>(this, (r, m) => OnStoreAdded(m.newStore));
         WeakReferenceMessenger.Default.Register<StoreEditedMessage>(this, async (r, m) => await OnStoreEdited(m.editedStore));
+    }
+
+    private async Task CalculateRevenue()
+    {
+        Revenue = await _billDetailRepo.GetTotalOfAllBillsAsync();
     }
 
     private async Task LoadStoresAsync()
@@ -89,6 +101,7 @@ public partial class StoreViewModel : ObservableObject
 
             await _storeRepo.DeleteStoreAsync(SelectedStore);
             Stores.Remove(SelectedStore);
+            await CalculateRevenue();
         }
         catch (Exception ex)
         {
@@ -99,6 +112,12 @@ public partial class StoreViewModel : ObservableObject
     [RelayCommand]
     private async Task ViewBills()
     {
-        
+        if (SelectedStore == null)
+        {
+            await Shell.Current.DisplayAlert("Error", "Please select the store", "OK");
+            return;
+        }
+
+        await Shell.Current.GoToAsync($"{nameof(BillPage)}?storeId={SelectedStore?.Id}");
     }
 }

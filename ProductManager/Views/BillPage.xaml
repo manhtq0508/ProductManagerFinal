@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProductManager.Views.BillPage"
+             xmlns:model="clr-namespace:ProductManager.Entities"
+             xmlns:viewmodel="clr-namespace:ProductManager.ViewModels"
+             x:DataType="viewmodel:BillViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <Grid
+        Padding="20"
+        RowDefinitions="Auto, Auto, *, Auto"
+        RowSpacing="10">
+        <Grid
+            ColumnDefinitions="*, Auto, Auto, Auto, Auto"
+            ColumnSpacing="10"
+            Grid.Row="0">
+            <SearchBar
+                Placeholder="Search by id, date"
+                Grid.Column="0"/>
+            <Button
+                Text="Add"
+                Command="{Binding AddBillCommand}"
+                WidthRequest="100" 
+                Grid.Column="1"/>
+            <Button
+                Text="Edit"
+                Command="{Binding EditBillCommand}"
+                WidthRequest="100"
+                Grid.Column="2" />
+            <Button
+                Text="Delete"
+                Command="{Binding DeleteBillCommand}"
+                WidthRequest="100"
+                Grid.Column="3" />
+            <Button
+                Text="Detail"
+                Command="{Binding DetailOfBillCommand}"
+                WidthRequest="100"
+                Grid.Column="4" />
+        </Grid>
+        
+        <Label
+            Text="Bill List"
+            FontSize="Large"
+            FontAttributes="Bold" 
+            Grid.Row="1"/>
+
+        <CollectionView
+            ItemsSource="{Binding Bills}"
+            SelectedItem="{Binding SelectedBill}"
+            SelectionMode="Single"
+            Grid.Row="2">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="model:Bill">
+                    <VerticalStackLayout
+                        Padding="20"
+                        Spacing="5">
+                        <Label
+                            Text="{Binding Id}"
+                            FontAttributes="Bold"
+                            FontSize="Subtitle"
+                            TextColor="{StaticResource Primary}"/>
+                        <Label
+                            Text="{Binding Date}" 
+                            Padding="5, 0" />
+                        <HorizontalStackLayout
+                            Spacing="5">
+                            <Label
+                                Text="Total:" 
+                                Padding="5, 0" />
+                            <Label
+                                Text="10000" />
+                            <Label
+                                Text="VND" />
+                        </HorizontalStackLayout>
+                        
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            
+        </CollectionView>
+
+        <HorizontalStackLayout
+            HorizontalOptions="End"
+            Spacing="5"
+            Grid.Row="3">
+            <Label
+                Text="Total:"
+                FontSize="Large"
+                FontAttributes="Bold"/>
+            <Label
+                Text="{Binding Total, StringFormat='{0:N0}'}"
+                FontSize="Large"
+                FontAttributes="Bold"/>
+            <Label
+                Text="VND"
+                FontSize="Large"
+                FontAttributes="Bold"/>
+        </HorizontalStackLayout>
+
+    </Grid>
+    
+</ContentPage>

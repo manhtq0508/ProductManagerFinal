@@ -17,6 +17,9 @@ namespace ProductManager
             Routing.RegisterRoute(nameof(ProductPage), typeof(ProductPage));
             Routing.RegisterRoute(nameof(AddProductPage), typeof(AddProductPage));
             Routing.RegisterRoute(nameof(EditProductPage), typeof(EditProductPage));
+
+            // Bill
+            Routing.RegisterRoute(nameof(BillPage), typeof(BillPage));
         }
     }
 }

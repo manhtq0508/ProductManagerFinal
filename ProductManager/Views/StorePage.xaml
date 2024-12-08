@@ -9,7 +9,7 @@
 
     <Grid
         Padding="20"
-        RowDefinitions="Auto, Auto, *"
+        RowDefinitions="Auto, Auto, Auto, *"
         RowSpacing="20">
 
         <Grid
@@ -47,11 +47,30 @@
             FontAttributes="Bold"
             Grid.Row="1" />
 
+        <HorizontalStackLayout
+            Spacing="5"
+            Grid.Row="2">
+            <Label
+                Text="⟩ Revenue:"
+                FontSize="Medium"
+                FontAttributes="Bold" />
+
+            <Label
+                Text="{Binding Revenue, StringFormat='{0:N0}'}"
+                FontSize="Medium"
+                FontAttributes="Bold"/>
+
+            <Label
+                Text="VND"
+                FontSize="Medium"
+                FontAttributes="Bold" />
+        </HorizontalStackLayout>
+
         <CollectionView
             ItemsSource="{Binding Stores}"
             SelectionMode="Single"
             SelectedItem="{Binding SelectedStore}"
-            Grid.Row="2">
+            Grid.Row="3">
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="model:Store">

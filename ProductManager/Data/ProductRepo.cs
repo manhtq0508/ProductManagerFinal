@@ -7,12 +7,30 @@ namespace ProductManager.Data;
 
 public class ProductRepo(DatabaseService dbService) : IProductRepo
 {
+    public async Task AddListProductsAsync(List<Product> products)
+    {
+        foreach (var product in products)
+        {
+            var isIdExist = await dbService.AppDbContext.Products
+                .AsNoTracking()
+                .AnyAsync(p => p.Id == product.Id);
+
+            if (isIdExist)
+            {
+                throw new Exception("Product Id is already exist");
+            }
+        }
+
+        await dbService.AppDbContext.AddRangeAsync(products);
+        await dbService.AppDbContext.SaveChangesAsync();
+    }
+
     public async Task AddProductAsync(Product product)
     {
         var isIdExist = await dbService.AppDbContext.Products
             .AsNoTracking()
             .AnyAsync(p => p.Id == product.Id);
-        
+
         if (isIdExist)
         {
             throw new Exception("Product Id is already exist");

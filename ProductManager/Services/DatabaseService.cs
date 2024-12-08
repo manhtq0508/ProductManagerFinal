@@ -12,7 +12,7 @@ public class DatabaseService
     public async Task InitializeDatabase(string dbPath)
     {
         var dbOptions = new DbContextOptionsBuilder<AppDbContext>()
-            .UseSqlite($"Data Source={dbPath}")
+            .UseSqlite($"Data Source={dbPath};Foreign Keys=True")
             .Options;
 
         _appDbContext = new AppDbContext(dbOptions);

@@ -36,6 +36,10 @@ public static class ApplicationServiceExtension
         services.AddTransient<EditProductPage>();
         services.AddTransient<EditProductViewModel>();
 
+        // Bill
+        services.AddTransient<BillPage>();
+        services.AddTransient<BillViewModel>();
+
         return services;
     }
 }
