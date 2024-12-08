@@ -52,9 +52,17 @@ public partial class AddProductViewModel : ObservableObject
             Price = price
         };
 
-        await _productRepo.AddProductAsync(newProduct);
-        WeakReferenceMessenger.Default.Send(new ProductAddedMessage(newProduct));
-        await Shell.Current.GoToAsync("..");
+        try
+        {
+            await _productRepo.AddProductAsync(newProduct);
+            WeakReferenceMessenger.Default.Send(new ProductAddedMessage(newProduct));
+            await Shell.Current.GoToAsync("..");
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
+        }
+
     }
 
     [RelayCommand]

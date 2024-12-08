@@ -11,18 +11,21 @@ public class BillDetailRepo(DatabaseService dbService) : IBillDetailRepo
     private async Task<bool> CheckBillDetailValid(BillDetail billDetail)
     {
         var isBillDetailExist = await dbService.AppDbContext.BillDetails
+            .AsNoTracking()
             .AnyAsync(bd => bd.BillId == billDetail.BillId && bd.ProductId == billDetail.ProductId);
 
         if (isBillDetailExist)
             throw new Exception("Bill detail is existed");
 
         var isProductExist = await dbService.AppDbContext.Products
+            .AsNoTracking()
             .AnyAsync(p => p.Id == billDetail.ProductId);
 
         if (!isProductExist)
             throw new Exception("Product does not exist");
 
         var isBillExist = await dbService.AppDbContext.Bills
+            .AsNoTracking()
             .AnyAsync(b => b.Id == billDetail.BillId);
 
         if (!isBillExist)
@@ -77,19 +80,6 @@ public class BillDetailRepo(DatabaseService dbService) : IBillDetailRepo
             .SumAsync(bd => bd.Quantity * bd.Product.Price);
     }
 
-    public async Task UpdateProductQuantityAsync(string billId, string productId, int newQuantity)
-    {
-        var billDetail = dbService.AppDbContext.BillDetails
-            .FirstOrDefault(bd => bd.BillId == billId && bd.ProductId == productId);
-        if (billDetail == null)
-        {
-            throw new Exception("Product is not found in the bill");
-        }
-
-        billDetail.Quantity = newQuantity;
-        await dbService.AppDbContext.SaveChangesAsync();
-    }
-
     public async Task<long> GetRevenueOfStoreByIdAsync(string storeId)
     {
         return await dbService.AppDbContext.BillDetails
@@ -122,5 +112,29 @@ public class BillDetailRepo(DatabaseService dbService) : IBillDetailRepo
             })
             .AsNoTracking()
             .ToListAsync();
+    }
+
+    public async Task UpdateListBillDetailAsync(List<BillDetail> billDetails)
+    {
+        foreach (var billDetail in billDetails)
+        {
+            var billDetailInDb = await dbService.AppDbContext.BillDetails
+                .FirstOrDefaultAsync(bd => bd.BillId == billDetail.BillId && bd.ProductId == billDetail.ProductId);
+
+            if (billDetailInDb == null)
+            {
+                throw new Exception("Bill detail is not found");
+            }
+
+            billDetailInDb.Quantity = billDetail.Quantity;
+        }
+
+        await dbService.AppDbContext.SaveChangesAsync();
+
+        // Deattach all entities
+        foreach (var billDetail in billDetails)
+        {
+            dbService.AppDbContext.Entry(billDetail).State = EntityState.Detached;
+        }
     }
 }

@@ -34,6 +34,7 @@ public partial class BillViewModel : ObservableObject
         _billDetailRepo = billDetailRepo;
 
         WeakReferenceMessenger.Default.Register<BillAddedMessage>(this, (r, m) => OnBillAdded(m.newBill));
+        WeakReferenceMessenger.Default.Register<BillEditedMessage>(this, async (r, m) => await OnBillEditedAsync());
     }
 
     private void OnBillAdded(Bill newBill)
@@ -43,6 +44,13 @@ public partial class BillViewModel : ObservableObject
 
         Bills.Add(newBill);
         CalculateTotal().Wait();
+
+        WeakReferenceMessenger.Default.Send(new BillChangedMessage());
+    }
+    private async Task OnBillEditedAsync()
+    {
+        await LoadBillsAsync();
+        await CalculateTotal();
 
         WeakReferenceMessenger.Default.Send(new BillChangedMessage());
     }

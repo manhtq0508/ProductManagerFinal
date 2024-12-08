@@ -42,7 +42,6 @@ public class StoreRepo(DatabaseService dbService) : IStoreRepo
 
     public async Task DeleteStoreAsync(Store store)
     {
-        dbService.AppDbContext.Stores.Attach(store);
         dbService.AppDbContext.Remove(store);
         await dbService.AppDbContext.SaveChangesAsync();
     }
@@ -80,5 +79,6 @@ public class StoreRepo(DatabaseService dbService) : IStoreRepo
         existingStore.Address = store.Address;
 
         await dbService.AppDbContext.SaveChangesAsync();
+        dbService.AppDbContext.Entry(existingStore).State = EntityState.Detached;
     }
 }

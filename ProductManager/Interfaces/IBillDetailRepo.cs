@@ -13,6 +13,6 @@ public interface IBillDetailRepo
     Task<IEnumerable<ProductInBill>> GetListProductInBillAsync(string billId);
     Task AddBillDetailAsync(BillDetail billDetail);
     Task AddListBillDetailAsync(List<BillDetail> billDetails);
-    Task UpdateProductQuantityAsync(string billId, string productId, int newQuantity);
+    Task UpdateListBillDetailAsync(List<BillDetail> billDetails);
     Task DeleteProductAsync(string billId, string productId);
 }

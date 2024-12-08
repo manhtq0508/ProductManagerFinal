@@ -42,6 +42,18 @@ public class BillRepo(DatabaseService dbService) : IBillRepo
         await dbService.AppDbContext.SaveChangesAsync();
     }
 
+    public async Task<Bill> GetBillByIdAsync(string billId)
+    {
+        var bill = await dbService.AppDbContext.Bills
+            .AsNoTracking()
+            .FirstOrDefaultAsync(b => b.Id == billId);
+
+        if (bill == null)
+            throw new Exception("Bill not found");
+
+        return bill;
+    }
+
     public async Task<IEnumerable<Bill>> GetBillsOfStoreAsync(string storeId)
     {
         if (storeId == null)
@@ -67,5 +79,6 @@ public class BillRepo(DatabaseService dbService) : IBillRepo
         existingBill.Date = bill.Date;
 
         await dbService.AppDbContext.SaveChangesAsync();
+        dbService.AppDbContext.Entry(existingBill).State = EntityState.Detached;
     }
 }

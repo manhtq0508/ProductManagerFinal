@@ -108,7 +108,7 @@ public partial class MainViewModel : ObservableObject
         }
         await _billRepo.AddListBillsAsync(bills);
 
-        // Generate demo bill details (each bill has 5 products)
+        // Generate demo billNeedEdit details (each billNeedEdit has 5 products)
         List<BillDetail> billDetails = new List<BillDetail>();
         for (int storeId = 1; storeId <= 5; storeId++)
         {

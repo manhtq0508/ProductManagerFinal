@@ -77,5 +77,6 @@ public class ProductRepo(DatabaseService dbService) : IProductRepo
         existingProduct.Price = product.Price;
 
         await dbService.AppDbContext.SaveChangesAsync();
+        dbService.AppDbContext.Entry(existingProduct).State = EntityState.Detached; // Detach the entity
     }
 }

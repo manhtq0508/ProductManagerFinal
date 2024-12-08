@@ -21,14 +21,14 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .HasForeignKey(b => b.StoreId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // If delete product, delete all bill details of that product
+        // If delete product, delete all billNeedEdit details of that product
         modelBuilder.Entity<BillDetail>()
             .HasOne(bd => bd.Product)
             .WithMany(p => p.BillDetails)
             .HasForeignKey(bd => bd.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // If delete bill, delete all bill details of that bill
+        // If delete billNeedEdit, delete all billNeedEdit details of that billNeedEdit
         modelBuilder.Entity<BillDetail>()
             .HasOne(bd => bd.Bill)
             .WithMany(b => b.BillDetails)

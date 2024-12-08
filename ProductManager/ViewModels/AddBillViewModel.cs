@@ -102,10 +102,10 @@ public partial class AddBillViewModel : ObservableObject
                 StoreId = CurrentStoreId
             };
 
-            // Create bill
+            // Create billNeedEdit
             await _billRepo.AddBillAsync(newBill);
 
-            // Create bill details
+            // Create billNeedEdit details
             List<BillDetail> list = new List<BillDetail>();
             foreach (var product in Products)
             {

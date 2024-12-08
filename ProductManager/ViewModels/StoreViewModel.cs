@@ -33,8 +33,8 @@ public partial class StoreViewModel : ObservableObject
 
         // Register to receive messages
         WeakReferenceMessenger.Default.Register<StoreAddedMessage>(this, (r, m) => OnStoreAdded(m.newStore));
-        WeakReferenceMessenger.Default.Register<StoreEditedMessage>(this, async (r, m) => await OnStoreEdited(m.editedStore));
-        // Update revenue when a bill is added or edited
+        WeakReferenceMessenger.Default.Register<StoreEditedMessage>(this, async (r, m) => await LoadStoresAsync());
+        // Update revenue when a billNeedEdit is added or edited
         WeakReferenceMessenger.Default.Register<BillChangedMessage>(this, async (r, m) => await CalculateRevenue());
     }
 
@@ -62,11 +62,6 @@ public partial class StoreViewModel : ObservableObject
             Stores = new ObservableCollection<Store>();
 
         Stores.Add(newStore);
-    }
-
-    private async Task OnStoreEdited(Store editedStore)
-    {
-        await LoadStoresAsync();
     }
 
     [RelayCommand]
