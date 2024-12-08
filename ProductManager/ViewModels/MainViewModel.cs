@@ -68,7 +68,7 @@ public partial class MainViewModel : ObservableObject
 
         // Generate demo products
         List<Product> products = new List<Product>();
-        for (int productId = 1; productId <= 10; productId++)
+        for (int productId = 1; productId < 10; productId++)
         {
             products.Add(new Product
             {

@@ -24,7 +24,7 @@ public partial class EditStoreViewModel : ObservableObject
         _storeRepo = storeRepo;
     }
 
-    // Call when storeId is changed
+    // Call when currentStoreId is changed
     partial void OnStoreIdChanged(string? value)
     {
         if (!string.IsNullOrEmpty(value))

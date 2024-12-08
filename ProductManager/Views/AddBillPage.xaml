@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProductManager.Views.AddBillPage"
+             xmlns:combinedata="clr-namespace:ProductManager.CombineData"
+             xmlns:viewmodel="clr-namespace:ProductManager.ViewModels"
+             x:DataType="viewmodel:AddBillViewModel"
+             Shell.NavBarIsVisible="False">
+    <Grid
+        Padding="20"
+        RowDefinitions="Auto, Auto, Auto, Auto, Auto, *"
+        RowSpacing="10">
+        <Grid
+            ColumnDefinitions=".50*, .50*"
+            Grid.Row="0">
+            <Label
+                Text="Add Bill"
+                VerticalOptions="Center"
+                FontSize="Large"
+                FontAttributes="Bold"
+                Grid.Column="0"/>
+
+            <HorizontalStackLayout
+                HorizontalOptions="End"
+                Spacing="10"
+                Grid.Column="1">
+                <Button
+                    Text="Add Bill"
+                    Command="{Binding AddBillCommand}"
+                    WidthRequest="100" />
+                <Button
+                    Text="Cancel"
+                    Command="{Binding CancelCommand}"
+                    WidthRequest="100" />
+            </HorizontalStackLayout>
+
+        </Grid>
+
+        <Grid
+            RowDefinitions="Auto, Auto, Auto"
+            RowSpacing="10"
+            ColumnDefinitions="Auto, Auto"
+            ColumnSpacing="10"
+            Grid.Row="1">
+            <Label
+                Text="ID:"
+                VerticalOptions="Center"
+                Grid.Row="0"
+                Grid.Column="0" />
+            <Entry
+                Text="{Binding BillId}"
+                Grid.Row="0"
+                Grid.Column="1" />
+            <Label
+                Text="Date:" 
+                VerticalOptions="Center"
+                Grid.Row="1"
+                Grid.Column="0"/>
+            <DatePicker
+                Date="{Binding BillDate}"
+                Grid.Row="1"
+                Grid.Column="1" />
+            <Label
+                Text="Time:"
+                VerticalOptions="Center"
+                Grid.Row="2"
+                Grid.Column="0" />
+            <TimePicker
+                Time="{Binding BillTime}"
+                Grid.Row="2"
+                Grid.Column="1" />
+        </Grid>
+        <Grid
+            ColumnDefinitions=".50*, .50*"
+            Grid.Row="2">
+            <Label
+                Text="Product List"
+                VerticalOptions="Center"
+                FontSize="Medium"
+                FontAttributes="Bold"
+                Grid.Column="0"/>
+            <HorizontalStackLayout
+                HorizontalOptions="End"
+                Spacing="10"
+                Grid.Column="1">
+                <Button
+                    Text="Add"
+                    Command="{Binding AddProductCommand}"
+                    WidthRequest="100" />
+                <Button
+                    Text="Remove"
+                    Command="{Binding RemoveProductCommand}"
+                    WidthRequest="100" />
+            </HorizontalStackLayout>
+        </Grid>
+        <HorizontalStackLayout
+            Spacing="5"
+            Grid.Row="3">
+            <Label
+                Text="→ Total:" 
+                FontSize="Medium"
+                FontAttributes="Bold"/>
+            <Label
+                Text="{Binding Total, StringFormat='{0:N0}'}" 
+                FontSize="Medium"
+                FontAttributes="Bold"/>
+            <Label
+                Text="VND"
+                FontSize="Medium"
+                FontAttributes="Bold"/>
+        </HorizontalStackLayout>
+
+        <Grid
+            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}"
+            ColumnDefinitions="Auto, .15*, Auto, .25*, Auto, .20*, Auto, .20*, Auto, .20*, Auto"
+            Grid.Row="4">
+            <BoxView
+                WidthRequest="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray100}}"
+                Grid.Column="0"/>
+            <Label
+                Text="ID" 
+                FontAttributes="Bold"
+                Grid.Column="1"
+                HorizontalTextAlignment="Center"/>
+            <BoxView
+                WidthRequest="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray100}}"
+                Grid.Column="2"/>
+            <Label
+                Text="Name" 
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                Grid.Column="3" />
+            <BoxView
+                WidthRequest="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray100}}"
+                Grid.Column="4"/>
+            <Label
+                Text="Price" 
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                Grid.Column="5"/>
+            <BoxView
+                WidthRequest="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray100}}"
+                Grid.Column="6"/>
+            <Label
+                Text="Quantity" 
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                Grid.Column="7"/>
+            <BoxView
+                WidthRequest="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray100}}"
+                Grid.Column="8"/>
+            <Label
+                Text="Total" 
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                Grid.Column="9"/>
+            <BoxView
+                WidthRequest="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray100}}"
+                Grid.Column="10"/>
+        </Grid>
+        <CollectionView
+            ItemsSource="{Binding Products}"
+            SelectedItem="{Binding SelectedProduct}"
+            SelectionMode="Single"
+            Grid.Row="5">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="combinedata:ProductInBill">
+                    <Grid
+                        Padding="0, 10"
+                        ColumnDefinitions=".15*, .25*, .20*, .20*, .20*">
+                        <Label
+                            Text="{Binding Id}"
+                            VerticalOptions="Center"
+                            HorizontalOptions="Center"
+                            Grid.Column="0" />
+                        <Label
+                            Text="{Binding Name}"
+                            Padding="10, 0"
+                            VerticalOptions="Center"
+                            Grid.Column="1" />
+                        <Label
+                            Text="{Binding Price, StringFormat='{0:N0}'}"
+                            Padding="10, 0"
+                            VerticalOptions="Center"
+                            HorizontalOptions="End"
+                            Grid.Column="2" />
+                        <Entry
+                            Text="{Binding Quantity}"
+                            Margin="10, 0"
+                            FlowDirection="RightToLeft"
+                            VerticalTextAlignment="Center"
+                            Grid.Column="3" />
+                        <Label
+                            Text="{Binding Total, StringFormat='{0:N0}'}"
+                            Padding="10, 0"
+                            VerticalOptions="Center"
+                            HorizontalOptions="End"
+                            Grid.Column="4" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

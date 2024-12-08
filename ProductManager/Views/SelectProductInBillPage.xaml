@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProductManager.Views.SelectProductInBillPage"
+             xmlns:model="clr-namespace:ProductManager.Entities"
+             xmlns:viewmodel="clr-namespace:ProductManager.ViewModels"
+             x:DataType="viewmodel:SelectProductInBillViewModel"
+             Shell.NavBarIsVisible="False">
+    <Grid
+        Padding="20"
+        RowDefinitions="Auto, Auto, Auto, *"
+        RowSpacing="10">
+        <Grid
+            ColumnDefinitions=".50*, .50*"
+            Grid.Row="0">
+            <Label
+                Text="Add product in bill"
+                FontSize="Large"
+                FontAttributes="Bold"
+                Grid.Column="0"/>
+            <HorizontalStackLayout
+                HorizontalOptions="End"
+                Spacing="10"
+                Grid.Column="1">
+                <Button
+                    Text="Select"
+                    Command="{Binding SelectProductCommand}"
+                    WidthRequest="100" />
+                <Button
+                    Text="Cancel"
+                    Command="{Binding CancelCommand}"
+                    WidthRequest="100" />
+            </HorizontalStackLayout>
+        </Grid>
+        <Label
+            Text="Product List"
+            FontSize="Medium"
+            FontAttributes="Bold" 
+            Grid.Row="1"/>
+        <Grid
+            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}"
+            ColumnDefinitions="Auto, .20*, Auto, .50*, Auto, .30*, Auto"
+            Grid.Row="2">
+            <BoxView
+                WidthRequest="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray100}}"
+                Grid.Column="0"/>
+            <Label
+                Text="ID" 
+                FontAttributes="Bold"
+                Grid.Column="1"
+                HorizontalTextAlignment="Center"/>
+            <BoxView
+                WidthRequest="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray100}}"
+                Grid.Column="2"/>
+            <Label
+                Text="Name" 
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                Grid.Column="3" />
+            <BoxView
+                WidthRequest="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray100}}"
+                Grid.Column="4"/>
+            <Label
+                Text="Price" 
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                Grid.Column="5"/>
+            <BoxView
+                WidthRequest="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray100}}"
+                Grid.Column="6"/>
+        </Grid>
+
+        <CollectionView
+            ItemsSource="{Binding Products}"
+            SelectedItem="{Binding SelectedProduct}"
+            SelectionMode="Single"
+            Grid.Row="3">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="model:Product">
+                    <Grid
+                        Padding="0, 20"
+                        ColumnDefinitions=".20*, .50*, .30*">
+                        <Label
+                            Text="{Binding Id}"
+                            Padding="20, 0"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            Grid.Column="0" />
+                        <Label
+                            Text="{Binding Name}"
+                            Padding="20, 0"
+                            VerticalOptions="Center"
+                            HorizontalOptions="Start"
+                            Grid.Column="1" />
+                        <Label
+                            Text="{Binding Price, StringFormat='{0:N0}'}"
+                            Padding="20, 0"
+                            VerticalOptions="Center"
+                            HorizontalOptions="End"
+                            Grid.Column="2" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

@@ -34,6 +34,8 @@ public partial class StoreViewModel : ObservableObject
         // Register to receive messages
         WeakReferenceMessenger.Default.Register<StoreAddedMessage>(this, (r, m) => OnStoreAdded(m.newStore));
         WeakReferenceMessenger.Default.Register<StoreEditedMessage>(this, async (r, m) => await OnStoreEdited(m.editedStore));
+        // Update revenue when a bill is added or edited
+        WeakReferenceMessenger.Default.Register<BillChangedMessage>(this, async (r, m) => await CalculateRevenue());
     }
 
     private async Task CalculateRevenue()

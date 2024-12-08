@@ -1,7 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using ProductManager.Entities;
 using ProductManager.Interfaces;
+using ProductManager.Messages;
+using ProductManager.Views;
 using System.Collections.ObjectModel;
 
 namespace ProductManager.ViewModels;
@@ -29,6 +32,19 @@ public partial class BillViewModel : ObservableObject
     {
         _billRepo = billRepo;
         _billDetailRepo = billDetailRepo;
+
+        WeakReferenceMessenger.Default.Register<BillAddedMessage>(this, (r, m) => OnBillAdded(m.newBill));
+    }
+
+    private void OnBillAdded(Bill newBill)
+    {
+        if (Bills == null)
+            Bills = new ObservableCollection<Bill>();
+
+        Bills.Add(newBill);
+        CalculateTotal().Wait();
+
+        WeakReferenceMessenger.Default.Send(new BillChangedMessage());
     }
 
     partial void OnStoreIdChanged(string? value)
@@ -62,27 +78,47 @@ public partial class BillViewModel : ObservableObject
         Total = await _billDetailRepo.GetRevenueOfStoreByIdAsync(StoreId);
     }
 
-    public long demo()
-    {
-        return 1000;
-    }
-
     [RelayCommand]
     private async Task AddBill()
     {
-        
+        await Shell.Current.GoToAsync($"{nameof(AddBillPage)}?storeId={StoreId}");
     }
 
     [RelayCommand]
     private async Task EditBill()
     {
+        if (SelectedBill == null)
+        {
+            await Shell.Current.DisplayAlert("Error", "Please select bill to edit", "OK");
+            return;
+        }
 
+        await Shell.Current.GoToAsync($"{nameof(EditBillPage)}?billId={SelectedBill.Id}");
     }
 
     [RelayCommand]
     private async Task DeleteBill()
     {
+        if (SelectedBill == null)
+        {
+            await Shell.Current.DisplayAlert("Error", "Please select bill to delete", "OK");
+            return;
+        }
 
+        try
+        {
+            if (Bills == null) return;
+
+            await _billRepo.DeleteBillAsync(SelectedBill);
+            Bills.Remove(SelectedBill);
+            await CalculateTotal();
+
+            WeakReferenceMessenger.Default.Send(new BillChangedMessage());
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
+        }
     }
 
     [RelayCommand]

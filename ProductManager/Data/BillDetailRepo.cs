@@ -2,6 +2,7 @@
 using ProductManager.Interfaces;
 using ProductManager.Services;
 using Microsoft.EntityFrameworkCore;
+using ProductManager.CombineData;
 
 namespace ProductManager.Data;
 
@@ -105,5 +106,21 @@ public class BillDetailRepo(DatabaseService dbService) : IBillDetailRepo
             .Where(bd => bd.BillId == billId)
             .AsNoTracking()
             .SumAsync(bd => bd.Quantity * bd.Product.Price);
+    }
+
+    public async Task<IEnumerable<ProductInBill>> GetListProductInBillAsync(string billId)
+    {
+        return await dbService.AppDbContext.BillDetails
+            .Include(bd => bd.Product)
+            .Where(bd => bd.BillId == billId)
+            .Select(bd => new ProductInBill
+            {
+                Id = bd.ProductId,
+                Name = bd.Product.Name,
+                Price = bd.Product.Price,
+                Quantity = bd.Quantity,
+            })
+            .AsNoTracking()
+            .ToListAsync();
     }
 }
