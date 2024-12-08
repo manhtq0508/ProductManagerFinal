@@ -132,6 +132,12 @@ public partial class BillViewModel : ObservableObject
     [RelayCommand]
     private async Task DetailOfBill()
     {
+        if (SelectedBill == null)
+        {
+            await Shell.Current.DisplayAlert("Error", "Select a bill to view detail", "OK");
+            return;
+        }
 
+        await Shell.Current.GoToAsync($"{nameof(BillDetailPage)}?billId={SelectedBill.Id}");
     }
 }

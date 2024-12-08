@@ -47,6 +47,8 @@ public static class ApplicationServiceExtension
         // BillDetail
         services.AddTransient<SelectProductInBillPage>();
         services.AddTransient<SelectProductInBillViewModel>();
+        services.AddTransient<BillDetailPage>();
+        services.AddTransient<BillDetailViewModel>();
 
         return services;
     }

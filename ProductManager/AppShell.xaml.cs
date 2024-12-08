@@ -25,6 +25,7 @@ namespace ProductManager
 
             // BillDetail
             Routing.RegisterRoute(nameof(SelectProductInBillPage), typeof(SelectProductInBillPage));
+            Routing.RegisterRoute(nameof(BillDetailPage), typeof(BillDetailPage));
         }
     }
 }
