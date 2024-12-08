@@ -5,7 +5,9 @@ namespace ProductManager.Interfaces;
 public interface IBillDetailRepo
 {
     Task<IEnumerable<BillDetail>> GetBillDetailsOfBillAsync(string billId);
-    Task<long> GetTotalOfAllBillsAsync();
+    Task<long> GetRevenueOfAllStoresAsync();
+    Task<long> GetRevenueOfStoreByIdAsync(string storeId);
+    Task<long> GetTotalOfBillByIdAsync(string billId);
     Task AddBillDetailAsync(BillDetail billDetail);
     Task AddListBillDetailAsync(List<BillDetail> billDetails);
     Task UpdateProductQuantityAsync(string billId, string productId, int newQuantity);

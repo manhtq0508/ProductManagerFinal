@@ -69,12 +69,11 @@ public class BillDetailRepo(DatabaseService dbService) : IBillDetailRepo
             .ToListAsync();
     }
 
-    public async Task<long> GetTotalOfAllBillsAsync()
+    public async Task<long> GetRevenueOfAllStoresAsync()
     {
-        var total = await dbService.AppDbContext.BillDetails
+        return await dbService.AppDbContext.BillDetails
+            .AsNoTracking()
             .SumAsync(bd => bd.Quantity * bd.Product.Price);
-
-        return total;
     }
 
     public async Task UpdateProductQuantityAsync(string billId, string productId, int newQuantity)
@@ -88,5 +87,23 @@ public class BillDetailRepo(DatabaseService dbService) : IBillDetailRepo
 
         billDetail.Quantity = newQuantity;
         await dbService.AppDbContext.SaveChangesAsync();
+    }
+
+    public async Task<long> GetRevenueOfStoreByIdAsync(string storeId)
+    {
+        return await dbService.AppDbContext.BillDetails
+            .Include(bd => bd.Bill)
+            .Include(bd => bd.Product)
+            .Where(bd => bd.Bill.StoreId == storeId)
+            .AsNoTracking()
+            .SumAsync(bd => bd.Quantity * bd.Product.Price);
+    }
+
+    public async Task<long> GetTotalOfBillByIdAsync(string billId)
+    {
+        return await dbService.AppDbContext.BillDetails
+            .Where(bd => bd.BillId == billId)
+            .AsNoTracking()
+            .SumAsync(bd => bd.Quantity * bd.Product.Price);
     }
 }

@@ -36,6 +36,7 @@ public partial class BillViewModel : ObservableObject
         if (value != null)
         {
             LoadBillsAsync().Wait();
+            CalculateTotal().Wait();
         }
     }
 
@@ -52,6 +53,18 @@ public partial class BillViewModel : ObservableObject
         {
             Bills.Add(b);
         }
+    }
+
+    private async Task CalculateTotal()
+    {
+        if (StoreId == null) return;
+
+        Total = await _billDetailRepo.GetRevenueOfStoreByIdAsync(StoreId);
+    }
+
+    public long demo()
+    {
+        return 1000;
     }
 
     [RelayCommand]

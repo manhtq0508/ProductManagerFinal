@@ -11,6 +11,6 @@ public class BillDetail
     public required int Quantity { get; set; }
 
     // Navigation properties
-    public Bill Bill { get; set; }
-    public Product Product { get; set; }
+    public Bill? Bill { get; set; }
+    public Product? Product { get; set; }
 }

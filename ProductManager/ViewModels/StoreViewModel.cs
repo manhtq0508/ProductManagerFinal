@@ -38,7 +38,7 @@ public partial class StoreViewModel : ObservableObject
 
     private async Task CalculateRevenue()
     {
-        Revenue = await _billDetailRepo.GetTotalOfAllBillsAsync();
+        Revenue = await _billDetailRepo.GetRevenueOfAllStoresAsync();
     }
 
     private async Task LoadStoresAsync()
