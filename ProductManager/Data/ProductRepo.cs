@@ -1,7 +1,7 @@
-﻿using ProductManager.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using ProductManager.Entities;
 using ProductManager.Interfaces;
 using ProductManager.Services;
-using Microsoft.EntityFrameworkCore;
 
 namespace ProductManager.Data;
 
@@ -51,7 +51,7 @@ public class ProductRepo(DatabaseService dbService) : IProductRepo
         var product = await dbService.AppDbContext.Products
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == id);
-        
+
         if (product == null)
             throw new Exception("Product not found");
 

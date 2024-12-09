@@ -1,6 +1,5 @@
 ﻿using ProductManager.CombineData;
 using ProductManager.Entities;
-using System.Collections;
 
 namespace ProductManager.Interfaces;
 

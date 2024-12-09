@@ -1,8 +1,8 @@
-﻿using ProductManager.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using ProductManager.CombineData;
+using ProductManager.Entities;
 using ProductManager.Interfaces;
 using ProductManager.Services;
-using Microsoft.EntityFrameworkCore;
-using ProductManager.CombineData;
 
 namespace ProductManager.Data;
 

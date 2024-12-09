@@ -7,108 +7,108 @@
              x:DataType="viewmodel:EditBillViewModel"
              Shell.NavBarIsVisible="False">
     <Grid
-       Padding="20"
-       RowDefinitions="Auto, Auto, Auto, Auto, Auto, *"
-       RowSpacing="10">
+        Padding="20"
+        RowDefinitions="Auto, Auto, Auto, Auto, Auto, *"
+        RowSpacing="10">
         <Grid
-           ColumnDefinitions=".50*, .50*"
-           Grid.Row="0">
+            ColumnDefinitions=".50*, .50*"
+            Grid.Row="0">
             <Label
-               Text="Edit Bill"
-               VerticalOptions="Center"
-               FontSize="Large"
-               FontAttributes="Bold"
-               Grid.Column="0"/>
+                Text="Edit Bill"
+                VerticalOptions="Center"
+                FontSize="Large"
+                FontAttributes="Bold"
+                Grid.Column="0"/>
 
             <HorizontalStackLayout
-               HorizontalOptions="End"
-               Spacing="10"
-               Grid.Column="1">
+                HorizontalOptions="End"
+                Spacing="10"
+                Grid.Column="1">
                 <Button
-                   Text="Save"
+                    Text="Save"
                     Command="{Binding SaveBillCommand}"
-                   WidthRequest="100" />
+                    WidthRequest="100" />
                 <Button
-                   Text="Cancel"
+                    Text="Cancel"
                     Command="{Binding CancelCommand}"
-                   WidthRequest="100" />
+                    WidthRequest="100" />
             </HorizontalStackLayout>
 
         </Grid>
 
         <Grid
-           RowDefinitions="44, Auto, Auto"
-           RowSpacing="10"
-           ColumnDefinitions="Auto, Auto"
-           ColumnSpacing="10"
-           Grid.Row="1">
+            RowDefinitions="44, Auto, Auto"
+            RowSpacing="10"
+            ColumnDefinitions="Auto, Auto"
+            ColumnSpacing="10"
+            Grid.Row="1">
             <Label
-               Text="ID:"
-               VerticalOptions="Center"
-               Grid.Row="0"
-               Grid.Column="0" />
+                Text="ID:"
+                VerticalOptions="Center"
+                Grid.Row="0"
+                Grid.Column="0" />
             <Label
-               Text="{Binding BillNeedEdit.Id}"
-               VerticalOptions="Center"
-               Grid.Row="0"
-               Grid.Column="1" />
+                Text="{Binding BillNeedEdit.Id}"
+                VerticalOptions="Center"
+                Grid.Row="0"
+                Grid.Column="1" />
             <Label
-               Text="Date:" 
-               VerticalOptions="Center"
-               Grid.Row="1"
-               Grid.Column="0"/>
+                Text="Date:" 
+                VerticalOptions="Center"
+                Grid.Row="1"
+                Grid.Column="0"/>
             <DatePicker
                 Date="{Binding BillNeedEdit.Date.Date}"
-               Grid.Row="1"
-               Grid.Column="1" />
+                Grid.Row="1"
+                Grid.Column="1" />
             <Label
-               Text="Time:"
-               VerticalOptions="Center"
-               Grid.Row="2"
-               Grid.Column="0" />
+                Text="Time:"
+                VerticalOptions="Center"
+                Grid.Row="2"
+                Grid.Column="0" />
             <TimePicker
                 Time="{Binding BillNeedEdit.Date.TimeOfDay}"
-               Grid.Row="2"
-               Grid.Column="1" />
+                Grid.Row="2"
+                Grid.Column="1" />
         </Grid>
         <Grid
-           ColumnDefinitions=".50*, .50*"
-           Grid.Row="2">
+            ColumnDefinitions=".50*, .50*"
+            Grid.Row="2">
             <Label
-               Text="Product List"
-               VerticalOptions="Center"
-               FontSize="Medium"
-               FontAttributes="Bold"
-               Grid.Column="0"/>
+                Text="Product List"
+                VerticalOptions="Center"
+                FontSize="Medium"
+                FontAttributes="Bold"
+                Grid.Column="0"/>
             <HorizontalStackLayout
-               HorizontalOptions="End"
-               Spacing="10"
-               Grid.Column="1">
+                HorizontalOptions="End"
+                Spacing="10"
+                Grid.Column="1">
                 <Button
-                   Text="Add"
-                     Command="{Binding AddProductCommand}"
-                   WidthRequest="100" />
+                    Text="Add"
+                    Command="{Binding AddProductCommand}"
+                    WidthRequest="100" />
                 <Button
-                   Text="Remove"
-                   Command="{Binding RemoveProductCommand}"
-                   WidthRequest="100" />
+                    Text="Remove"
+                    Command="{Binding RemoveProductCommand}"
+                    WidthRequest="100" />
             </HorizontalStackLayout>
         </Grid>
         <HorizontalStackLayout
-           Spacing="5"
-           Grid.Row="3">
+            Spacing="5"
+            Grid.Row="3">
             <Label
-               Text="→ Total:" 
-               FontSize="Medium"
-               FontAttributes="Bold"/>
+                Text="→ Total:" 
+                FontSize="Medium"
+                FontAttributes="Bold"/>
             <Label
-               Text="{Binding Total, StringFormat='{0:N0}'}" 
-               FontSize="Medium"
-               FontAttributes="Bold"/>
+                Text="{Binding Total, StringFormat='{0:N0}'}" 
+                FontSize="Medium"
+                FontAttributes="Bold"/>
             <Label
-               Text="VND"
-               FontSize="Medium"
-               FontAttributes="Bold"/>
+            Text="VND"
+            FontSize="Medium"
+            FontAttributes="Bold"/>
         </HorizontalStackLayout>
 
         <Grid
