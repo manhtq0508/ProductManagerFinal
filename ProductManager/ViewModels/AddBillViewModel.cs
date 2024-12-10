@@ -23,10 +23,10 @@ public partial class AddBillViewModel : ObservableObject
     private string? billId;
 
     [ObservableProperty]
-    private DateOnly billDate;
+    private DateTime billDate = DateTime.Now;
 
     [ObservableProperty]
-    private TimeSpan billTime;
+    private TimeSpan billTime = DateTime.Now.TimeOfDay;
 
     [ObservableProperty]
     private ObservableCollection<ProductInBill>? products;
@@ -41,9 +41,6 @@ public partial class AddBillViewModel : ObservableObject
     {
         _billRepo = billRepo;
         _billDetailRepo = billDetailRepo;
-
-        BillDate = DateOnly.FromDateTime(DateTime.Now);
-        BillTime = new TimeSpan(hours: DateTime.Now.Hour, minutes: DateTime.Now.Minute, seconds: DateTime.Now.Second);
 
         WeakReferenceMessenger.Default.Register<ProductInBillSelectedMessage>(this, (r, m) => AddProductToBill(m.productInBill));
         WeakReferenceMessenger.Default.Register<QuantityChangedMessage>(this, (r, m) => CalculateTotal());
@@ -95,10 +92,12 @@ public partial class AddBillViewModel : ObservableObject
 
         try
         {
+            var createdDateTime = BillDate.Date.Add(BillTime);
+
             var newBill = new Bill
             {
                 Id = BillId,
-                Date = new DateTime(BillDate, TimeOnly.FromTimeSpan(BillTime)),
+                CreatedDateTime = createdDateTime,
                 StoreId = CurrentStoreId
             };
 

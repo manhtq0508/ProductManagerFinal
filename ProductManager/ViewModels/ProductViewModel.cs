@@ -6,6 +6,7 @@ using ProductManager.Interfaces;
 using ProductManager.Messages;
 using ProductManager.Views;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 
 namespace ProductManager.ViewModels;
 
@@ -19,6 +20,10 @@ public partial class ProductViewModel : ObservableObject
     [ObservableProperty]
     private Product? selectedProduct;
 
+    [ObservableProperty]
+    private string? searchText;
+    private ObservableCollection<Product>? _allProducts;
+
     public ProductViewModel(IProductRepo productRepo)
     {
         _productRepo = productRepo;
@@ -31,10 +36,12 @@ public partial class ProductViewModel : ObservableObject
 
     private void OnProductAdded(Product newProduct)
     {
-        if (Products == null)
-            Products = new ObservableCollection<Product>();
+        if (_allProducts == null)
+            _allProducts = new ObservableCollection<Product>();
 
-        Products.Add(newProduct);
+        _allProducts.Add(newProduct);
+
+        FilterProduct();
     }
 
     private async Task OnProductEdited(Product editedProduct)
@@ -44,15 +51,33 @@ public partial class ProductViewModel : ObservableObject
 
     private async Task LoadProducts()
     {
-        if (Products == null)
-            Products = new ObservableCollection<Product>();
-        else
-            Products.Clear();
+        _allProducts = new ObservableCollection<Product>(await _productRepo.GetProductsAsync());
 
-        foreach (var p in await _productRepo.GetProductsAsync())
+        FilterProduct();
+    }
+
+    partial void OnSearchTextChanged(string? value)
+    {
+        FilterProduct();
+    }
+
+    private void FilterProduct()
+    {
+        if (_allProducts == null)
+            return;
+
+        if (string.IsNullOrWhiteSpace(SearchText))
         {
-            Products.Add(p);
+            Products = new ObservableCollection<Product>(_allProducts);
+            return;
         }
+
+        string keyword = SearchText.ToLower().Trim();
+
+        Products = new ObservableCollection<Product>(
+            _allProducts.Where(p => p.Id.Contains(SearchText) ||
+                                    p.Name.ToLower().Contains(keyword))
+        );
     }
 
     [RelayCommand]

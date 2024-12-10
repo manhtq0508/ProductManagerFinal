@@ -21,6 +21,10 @@ public partial class StoreViewModel : ObservableObject
     private Store? selectedStore;
 
     [ObservableProperty]
+    private string? searchText;
+    private ObservableCollection<Store>? _allStore;
+
+    [ObservableProperty]
     private long? revenue;
 
     public StoreViewModel(IStoreRepo storeRepo, IBillDetailRepo billDetailRepo)
@@ -38,6 +42,31 @@ public partial class StoreViewModel : ObservableObject
         WeakReferenceMessenger.Default.Register<BillChangedMessage>(this, async (r, m) => await CalculateRevenue());
     }
 
+    partial void OnSearchTextChanged(string? value)
+    {
+        FilterStore();
+    }
+
+    private void FilterStore()
+    {
+        if (_allStore == null)
+            return;
+
+        if (string.IsNullOrWhiteSpace(SearchText))
+        {
+            Stores = new ObservableCollection<Store>(_allStore);
+            return;
+        }
+
+        string keyword = SearchText.ToLower().Trim();
+
+        Stores = new ObservableCollection<Store>(
+            _allStore.Where(s => s.Id.Contains(SearchText) || 
+                            s.Name.ToLower().Contains(keyword) ||
+                            s.Address.ToLower().Contains(keyword))
+        );
+    }
+
     private async Task CalculateRevenue()
     {
         Revenue = await _billDetailRepo.GetRevenueOfAllStoresAsync();
@@ -45,23 +74,19 @@ public partial class StoreViewModel : ObservableObject
 
     private async Task LoadStoresAsync()
     {
-        if (Stores == null)
-            Stores = new ObservableCollection<Store>();
-        else
-            Stores.Clear();
+        _allStore = new ObservableCollection<Store>(await _storeRepo.GetStoresAsync());
 
-        foreach (var s in await _storeRepo.GetStoresAsync())
-        {
-            Stores.Add(s);
-        }
+        FilterStore();
     }
 
     private void OnStoreAdded(Store newStore)
     {
-        if (Stores == null)
-            Stores = new ObservableCollection<Store>();
+        if (_allStore == null)
+            _allStore = new ObservableCollection<Store>();
 
-        Stores.Add(newStore);
+        _allStore.Add(newStore);
+
+        FilterStore();
     }
 
     [RelayCommand]

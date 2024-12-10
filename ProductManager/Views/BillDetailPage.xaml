@@ -30,8 +30,7 @@
         </Grid>
 
         <Grid
-            RowDefinitions="44, Auto, Auto"
-            RowSpacing="10"
+            RowDefinitions="44, 44"
             ColumnDefinitions="Auto, Auto"
             ColumnSpacing="10"
             Grid.Row="1">
@@ -46,24 +45,14 @@
                 Grid.Row="0"
                 Grid.Column="1" />
             <Label
-                Text="Date:" 
+                Text="Bill time:" 
                 VerticalOptions="Center"
                 Grid.Row="1"
                 Grid.Column="0"/>
-            <DatePicker
-                InputTransparent="True"
-                Date="{Binding DetailOfBill.Date.Date}"
-                Grid.Row="1"
-                Grid.Column="1" />
             <Label
-                Text="Time:"
+                Text="{Binding DetailOfBill.CreatedDateTime}"
                 VerticalOptions="Center"
-                Grid.Row="2"
-                Grid.Column="0" />
-            <TimePicker
-                InputTransparent="True"
-                Time="{Binding DetailOfBill.Date.TimeOfDay}"
-                Grid.Row="2"
+                Grid.Row="1"
                 Grid.Column="1" />
         </Grid>
         <Label

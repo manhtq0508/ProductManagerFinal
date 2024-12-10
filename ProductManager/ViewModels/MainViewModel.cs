@@ -102,7 +102,7 @@ public partial class MainViewModel : ObservableObject
                 {
                     Id = $"BIL{storeId}.{billId}",
                     StoreId = $"STO{storeId}",
-                    Date = DateTime.Now
+                    CreatedDateTime = DateTime.Now
                 });
             }
         }

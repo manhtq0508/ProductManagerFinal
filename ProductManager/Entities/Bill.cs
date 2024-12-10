@@ -6,7 +6,7 @@ public class Bill
 {
     [Key]
     public required string Id { get; set; }
-    public required DateTime Date { get; set; }
+    public required DateTime CreatedDateTime { get; set; }
 
     // Navigation properties
     public string StoreId { get; set; }

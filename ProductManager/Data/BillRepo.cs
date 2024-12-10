@@ -76,7 +76,7 @@ public class BillRepo(DatabaseService dbService) : IBillRepo
             throw new Exception("Bill not found");
 
         existingBill.StoreId = bill.StoreId;
-        existingBill.Date = bill.Date;
+        existingBill.CreatedDateTime = bill.CreatedDateTime;
 
         await dbService.AppDbContext.SaveChangesAsync();
         dbService.AppDbContext.Entry(existingBill).State = EntityState.Detached;

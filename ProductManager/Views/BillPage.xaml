@@ -9,46 +9,79 @@
 
     <Grid
         Padding="20"
-        RowDefinitions="Auto, Auto, Auto, *"
+        RowDefinitions="Auto, Auto, Auto, Auto, *"
         RowSpacing="10">
         <Grid
-            ColumnDefinitions="*, Auto, Auto, Auto, Auto"
+            ColumnDefinitions="*, Auto, Auto, Auto, Auto, Auto"
             ColumnSpacing="10"
             Grid.Row="0">
             <SearchBar
-                Placeholder="Search by id, date"
+                Text="{Binding SearchText}"
+                Placeholder="Search by id"
                 Grid.Column="0"/>
+            <Border
+                Stroke="Transparent"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 10"
+                Grid.Column="1">
+                <ImageButton 
+                    Source="filter.png"
+                    Command="{Binding ToggleFilterByDateTimeCommand}"
+                    WidthRequest="34"
+                    HeightRequest="34"
+                    Padding="10"/>
+            </Border>
             <Button
                 Text="Add"
                 Command="{Binding AddBillCommand}"
                 WidthRequest="100" 
-                Grid.Column="1"/>
+                Grid.Column="2"/>
             <Button
                 Text="Edit"
                 Command="{Binding EditBillCommand}"
                 WidthRequest="100"
-                Grid.Column="2" />
+                Grid.Column="3" />
             <Button
                 Text="Delete"
                 Command="{Binding DeleteBillCommand}"
                 WidthRequest="100"
-                Grid.Column="3" />
+                Grid.Column="4" />
             <Button
                 Text="Detail"
                 Command="{Binding DetailOfBillCommand}"
                 WidthRequest="100"
-                Grid.Column="4" />
+                Grid.Column="5" />
         </Grid>
-        
+
+        <HorizontalStackLayout
+            IsVisible="{Binding IsFilterByDateTime}"
+            Spacing="10"
+            Grid.Row="1">
+            <Label
+                Text="From:"
+                VerticalOptions="Center"/>
+            <DatePicker 
+                Date="{Binding FromDate}"/>
+            <TimePicker 
+                Time="{Binding FromTime}"/>
+            <Label
+                Text="To:"
+                VerticalOptions="Center"/>
+            <DatePicker 
+                Date="{Binding ToDate}"/>
+            <TimePicker 
+                Time="{Binding ToTime}"/>
+        </HorizontalStackLayout>
+
         <Label
             Text="Bill List"
             FontSize="Large"
             FontAttributes="Bold" 
-            Grid.Row="1"/>
+            Grid.Row="2"/>
 
         <HorizontalStackLayout
             Spacing="5"
-            Grid.Row="2">
+            Grid.Row="3">
             <Label
                 Text="→ Total:"
                 FontSize="Medium"
@@ -67,7 +100,7 @@
             ItemsSource="{Binding Bills}"
             SelectedItem="{Binding SelectedBill}"
             SelectionMode="Single"
-            Grid.Row="3">
+            Grid.Row="4">
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="model:Bill">
@@ -80,7 +113,7 @@
                             FontSize="Subtitle"
                             TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
                         <Label
-                            Text="{Binding Date}" 
+                            Text="{Binding CreatedDateTime}" 
                             Padding="5, 0" />
                     </VerticalStackLayout>
                 </DataTemplate>

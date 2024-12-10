@@ -16,6 +16,7 @@
             ColumnDefinitions="*, Auto, Auto, Auto, Auto"
             ColumnSpacing="10">
             <SearchBar 
+                Text="{Binding SearchText}"
                 Placeholder="Search by id, name, address"
                 Grid.Column="0"/>
 

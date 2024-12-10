@@ -10,6 +10,9 @@ public partial class LoginViewModel : ObservableObject
     private const string PASSWORD = "admin";
 
     [ObservableProperty]
+    private bool showLogingInScreen = false;
+
+    [ObservableProperty]
     private string? username;
 
     [ObservableProperty]
@@ -28,6 +31,10 @@ public partial class LoginViewModel : ObservableObject
         {
             if (Username == USERNAME && Password == PASSWORD)
             {
+                ShowLogingInScreen = true;
+
+                await Task.Delay(1000);
+
                 await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
             }
             else
