@@ -29,6 +29,8 @@ public partial class EditBillViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<ProductInBill>? products;
 
+    private List<ProductInBill> _productsDeleted = new List<ProductInBill>();
+
     [ObservableProperty]
     private ProductInBill? selectedProduct;
 
@@ -177,6 +179,7 @@ public partial class EditBillViewModel : ObservableObject
             return;
 
         Products.Remove(SelectedProduct);
+        _productsDeleted.Add(SelectedProduct);
         CalculateTotal();
     }
 }

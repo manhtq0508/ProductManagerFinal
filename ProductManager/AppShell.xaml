@@ -9,6 +9,10 @@
     Title="ProductManager">
 
     <ShellContent
+        ContentTemplate="{DataTemplate view:LoginPage}"
+        Route="LoginPage" />
+
+    <ShellContent
         ContentTemplate="{DataTemplate view:MainPage}"
         Route="MainPage" />
 

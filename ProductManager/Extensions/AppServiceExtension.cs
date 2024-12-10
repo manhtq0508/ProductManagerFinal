@@ -17,6 +17,9 @@ public static class ApplicationServiceExtension
         services.AddScoped<IProductRepo, ProductRepo>();
         services.AddScoped<IStoreRepo, StoreRepo>();
 
+        services.AddTransient<LoginPage>();
+        services.AddTransient<LoginViewModel>();
+
         services.AddSingleton<MainPage>();
         services.AddSingleton<MainViewModel>();
 

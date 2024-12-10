@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProductManager.Views.LoginPage"
+             xmlns:viewmodel="clr-namespace:ProductManager.ViewModels"
+             x:DataType="viewmodel:LoginViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <Grid
+        Padding="100, 60">
+        <Border
+            Stroke="Transparent"
+            StrokeShape="RoundRectangle 20"
+            BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
+            <Border.Shadow>
+                <Shadow Brush="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        Offset="10, 10"
+                        Radius="10"
+                        Opacity="0.9" />
+            </Border.Shadow>
+
+            <Grid
+                ColumnDefinitions=".50*, .50*">
+                <Image
+                    Source="login.png"
+                    Grid.Column="0" />
+                <Grid
+                    Padding="70, 20"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+                    RowDefinitions="*"
+                    Grid.Column="1">
+                    <VerticalStackLayout
+                        Spacing="10"
+                        VerticalOptions="CenterAndExpand"
+                        Grid.Row="0">
+                        <Label
+                            Text="Login"
+                            FontAttributes="Bold"
+                            FontSize="Header"/>
+                        <Label
+                            Text="Username:" />
+                        <Entry 
+                            Text="{Binding Username}"/>
+                        <Label
+                            Text="Password:" />
+                        <Entry 
+                            IsPassword="True"
+                            Text="{Binding Password}"
+                            ReturnCommand="{Binding LoginCommand}"/>
+                        <Button
+                            Text="Login"
+                            Command="{Binding LoginCommand}"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+    
+</ContentPage>

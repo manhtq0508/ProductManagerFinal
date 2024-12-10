@@ -40,6 +40,14 @@
             FontSize="Large"
             Grid.Row="1"/>
 
+        <Border
+            Stroke="Transparent"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 20"
+            BackgroundColor="{StaticResource Gray600}"
+            Grid.Row="2">
+            
+        </Border>
         <Grid
             BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}"
             ColumnDefinitions="Auto, .20*, Auto, .50*, Auto, .30*, Auto"

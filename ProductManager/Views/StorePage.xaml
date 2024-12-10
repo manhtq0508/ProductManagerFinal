@@ -81,7 +81,7 @@
                             Text="{Binding Id}"
                             FontAttributes="Bold"
                             FontSize="Subtitle"
-                            TextColor="{StaticResource Primary}" />
+                            TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
                         <Label
                             Padding="5, 0"
                             Text="{Binding Name}" />
