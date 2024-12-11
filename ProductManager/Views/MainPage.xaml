@@ -18,7 +18,8 @@
                 FontAttributes="Bold"
                 FontSize="Header"/>
             <HorizontalStackLayout
-                Spacing="25">
+                Spacing="15"
+                VerticalOptions="CenterAndExpand">
                 <VerticalStackLayout
                     Spacing="10">
                     <Border
@@ -60,15 +61,16 @@
 
             <HorizontalStackLayout
                 HorizontalOptions="CenterAndExpand"
-                Spacing="30">
+                Spacing="15">
                 <Button
                     Text="Import from Excel" 
                     Command="{Binding ImportFromFileCommand}"
-                    WidthRequest="200"/>
+                    WidthRequest="180"/>
 
                 <Button
                     Text="Export to file"
-                    WidthRequest="200" />
+                    Command="{Binding ExportToFileCommand}"
+                    WidthRequest="180" />
             </HorizontalStackLayout>
 
             <HorizontalStackLayout
@@ -86,11 +88,20 @@
                     WidthRequest="150"
                     BackgroundColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" />
             </HorizontalStackLayout>
-            
-            <Button
-                Text="Generate demo data" 
-                Command="{Binding GenDemoDataCommand}"
-                WidthRequest="200" />
+
+            <HorizontalStackLayout
+                Spacing="15"
+                HorizontalOptions="CenterAndExpand">
+                <Button
+                    Text="Generate demo data" 
+                    Command="{Binding GenDemoDataCommand}"
+                    WidthRequest="180" />
+
+                <Button
+                    Text="Clear all data"
+                    Command="{Binding ClearAllDataCommand}"
+                    WidthRequest="180" />
+            </HorizontalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 

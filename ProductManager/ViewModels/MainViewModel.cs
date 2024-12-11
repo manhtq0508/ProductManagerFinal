@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ProductManager.Entities;
+using ProductManager.Helpers;
 using ProductManager.Interfaces;
 using ProductManager.Services;
 using ProductManager.Views;
@@ -41,30 +42,47 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task ImportFromFile()
     {
-        await Shell.Current.DisplayAlert("Notice", Environment.CurrentDirectory, "OK");
+        FilePickerFileType fileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>> {
+                                {DevicePlatform.WinUI, new string[] {".xlsx"} }
+                            });
+
+        var file = await FilePicker.Default.PickAsync(new PickOptions
+        {
+            FileTypes = fileType,
+            PickerTitle = "Pick an Excel file"
+        });
+
+        if (file == null || string.IsNullOrEmpty(file.FullPath))
+            return;
+
+        try
+        {
+            var excelHelper = new ExcelHelper(_storeRepo, _billRepo, _productRepo, _billDetailRepo);
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
+        }
+    }
+
+    [RelayCommand]
+    private async Task ExportToFile()
+    {
+        try
+        {
+            var excelHelper = new ExcelHelper(_storeRepo, _billRepo, _productRepo, _billDetailRepo);
+            await excelHelper.Export("D:/");
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
+        }
     }
 
     [RelayCommand]
     private async Task GenDemoData()
     {
-        var isYes = await Shell.Current.DisplayAlert(
-            "Warning",
-            "This action will delete all current data and generate demo data. Are you sure?",
-            "Yes",
-            "No");
-        if (!isYes)
-            return;
-
-        try
-        {
-            _dbService.DeleteDatabase().Wait(); // Delete the database
-            _dbService.InitializeDatabase("product_manager.db").Wait(); // Reinitialize the database
-        }
-        catch (Exception ex)
-        {
-            await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
-            return;
-        }
+        await ClearAllData(); // Ensure that all current data is cleared before generating demo data
 
         // Generate demo products
         List<Product> products = new List<Product>();
@@ -116,7 +134,7 @@ public partial class MainViewModel : ObservableObject
             {
                 for (int productId = 1; productId <= 5; productId++)
                 {
-                    billDetails.Add(new BillDetail 
+                    billDetails.Add(new BillDetail
                     {
                         BillId = $"BIL{storeId}.{billId}",
                         ProductId = $"PRO{productId}",
@@ -126,7 +144,28 @@ public partial class MainViewModel : ObservableObject
             }
         }
         await _billDetailRepo.AddListBillDetailAsync(billDetails);
-        
+
         _dbService.AppDbContext.ChangeTracker.Clear();
+    }
+
+    [RelayCommand]
+    private async Task ClearAllData()
+    {
+        var isYes = await Shell.Current.DisplayAlert(
+            "Warning",
+            "This action will delete all current data. Are you sure?",
+            "Yes",
+            "No");
+        if (!isYes)
+            return;
+        try
+        {
+            _dbService.DeleteDatabase().Wait(); // Delete the database
+            _dbService.InitializeDatabase("product_manager.db").Wait(); // Reinitialize the database
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
+        }
     }
 }

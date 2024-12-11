@@ -45,7 +45,7 @@
                 Grid.Row="0"
                 Grid.Column="1" />
             <Label
-                Text="Bill time:" 
+                Text="Created at:" 
                 VerticalOptions="Center"
                 Grid.Row="1"
                 Grid.Column="0"/>
