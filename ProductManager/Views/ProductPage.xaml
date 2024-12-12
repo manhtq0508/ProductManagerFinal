@@ -80,8 +80,8 @@
 
         <CollectionView
             ItemsSource="{Binding Products}"
-            SelectedItem="{Binding SelectedProduct}"
-            SelectionMode="Single"
+            SelectedItems="{Binding SelectedProducts}"
+            SelectionMode="Multiple"
             Grid.Row="3">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="model:Product">

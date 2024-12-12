@@ -10,4 +10,5 @@ public interface IProductRepo
     Task AddListProductsAsync(List<Product> products);
     Task UpdateProductAsync(Product product);
     Task DeleteProductAsync(Product product);
+    Task DeleteListProductsAsync(List<Product> products);
 }

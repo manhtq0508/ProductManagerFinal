@@ -16,9 +16,7 @@ public class ProductRepo(DatabaseService dbService) : IProductRepo
                 .AnyAsync(p => p.Id == product.Id);
 
             if (isIdExist)
-            {
                 throw new Exception("Product Id is already exist");
-            }
         }
 
         await dbService.AppDbContext.AddRangeAsync(products);
@@ -37,6 +35,16 @@ public class ProductRepo(DatabaseService dbService) : IProductRepo
         }
 
         await dbService.AppDbContext.Products.AddAsync(product);
+        await dbService.AppDbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteListProductsAsync(List<Product> products)
+    {
+        foreach (var product in products)
+        {
+            dbService.AppDbContext.Products.Remove(product);
+        }
+
         await dbService.AppDbContext.SaveChangesAsync();
     }
 

@@ -17,7 +17,7 @@ public partial class ProductViewModel : ObservableObject
     private ObservableCollection<Product>? products;
 
     [ObservableProperty]
-    private Product? selectedProduct;
+    private ObservableCollection<object> selectedProducts = new();
 
     [ObservableProperty]
     private string? searchText;
@@ -88,19 +88,26 @@ public partial class ProductViewModel : ObservableObject
     [RelayCommand]
     private async Task EditProduct()
     {
-        if (SelectedProduct == null)
+        if (SelectedProducts.Count == 0)
         {
             await Shell.Current.DisplayAlert("Error", "Please select a product to edit", "OK");
             return;
         }
 
-        await Shell.Current.GoToAsync($"{nameof(EditProductPage)}?productId={SelectedProduct.Id}");
+        if (SelectedProducts.Count > 1)
+        {
+            await Shell.Current.DisplayAlert("Error", "Please select only one product to edit", "OK");
+            return;
+        }
+
+        if (SelectedProducts[0] is Product selectedProduct)
+            await Shell.Current.GoToAsync($"{nameof(EditProductPage)}?productId={selectedProduct.Id}");
     }
 
     [RelayCommand]
     private async Task DeleteProduct()
     {
-        if (SelectedProduct == null)
+        if (SelectedProducts.Count == 0)
         {
             await Shell.Current.DisplayAlert("Error", "Please select a product to delete", "OK");
             return;
@@ -108,11 +115,25 @@ public partial class ProductViewModel : ObservableObject
 
         try
         {
-            if (Products == null)
+            if (_allProducts == null)
                 return;
 
-            await _productRepo.DeleteProductAsync(SelectedProduct);
-            Products.Remove(SelectedProduct);
+            List<Product> products = new List<Product>();
+            foreach (var product in SelectedProducts)
+            {
+                if (product is Product p)
+                    products.Add(p);
+            }
+            SelectedProducts.Clear();
+
+            await _productRepo.DeleteListProductsAsync(products);
+
+            foreach (var product in products)
+            {
+                _allProducts.Remove(product);
+            }
+
+            FilterProduct();
         }
         catch (Exception ex)
         {
