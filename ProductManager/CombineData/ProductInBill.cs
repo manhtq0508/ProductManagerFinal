@@ -7,10 +7,10 @@ namespace ProductManager.CombineData;
 public partial class ProductInBill : ObservableObject
 {
     [ObservableProperty]
-    private string? id;
+    private string id = "";
 
     [ObservableProperty]
-    private string? name;
+    private string name = "";
 
     [ObservableProperty]
     private int price;

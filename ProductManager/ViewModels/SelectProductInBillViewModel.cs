@@ -17,7 +17,11 @@ public partial class SelectProductInBillViewModel : ObservableObject
     private ObservableCollection<Product>? products;
 
     [ObservableProperty]
-    private Product? selectedProduct;
+    private string searchText = "";
+    private ObservableCollection<Product> _allProducts = new();
+
+    [ObservableProperty]
+    private ObservableCollection<object> selectedProducts = new();
 
     public SelectProductInBillViewModel(IProductRepo productRepo)
     {
@@ -27,34 +31,50 @@ public partial class SelectProductInBillViewModel : ObservableObject
 
     private async Task LoadProductsAsync()
     {
-        if (Products == null)
-            Products = new ObservableCollection<Product>();
-        else
-            Products.Clear();
-        foreach (var p in await _productRepo.GetProductsAsync())
+        _allProducts = new(await _productRepo.GetProductsAsync());
+        FilterProduct();
+    }
+
+    partial void OnSearchTextChanged(string value)
+    {
+        FilterProduct();
+    }
+
+    private void FilterProduct()
+    {
+        if (string.IsNullOrWhiteSpace(SearchText))
         {
-            Products.Add(p);
+            Products = new ObservableCollection<Product>(_allProducts);
+            return;
         }
+
+        string keyword = SearchText.ToLower().Trim();
+        Products = new ObservableCollection<Product>(
+            _allProducts.Where(p => p.Id.Contains(SearchText) || 
+                                    p.Name.ToLower().Contains(keyword))
+        );
     }
 
     [RelayCommand]
     private async Task SelectProduct()
     {
-        if (SelectedProduct == null)
+        List<ProductInBill> productsInBills = new();
+        foreach (var p in SelectedProducts)
         {
-            await Shell.Current.DisplayAlert("Error", "Please select a product", "OK");
-            return;
+            if (p is Product product)
+            {
+                productsInBills.Add(new ProductInBill
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Price = product.Price,
+                    Quantity = 1
+                });
+
+            }
         }
 
-        var productInBill = new ProductInBill
-        {
-            Id = SelectedProduct.Id,
-            Name = SelectedProduct.Name,
-            Price = SelectedProduct.Price,
-            Quantity = 1
-        };
-
-        WeakReferenceMessenger.Default.Send<ProductInBillSelectedMessage>(new ProductInBillSelectedMessage(productInBill));
+        WeakReferenceMessenger.Default.Send<ProductsInBillSelectedMessage>(new ProductsInBillSelectedMessage(productsInBills));
         await Shell.Current.GoToAsync("..");
     }
 

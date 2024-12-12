@@ -40,23 +40,13 @@ public partial class EditBillViewModel : ObservableObject
         _billRepo = billRepo;
         _billDetailRepo = billDetailRepo;
 
-        WeakReferenceMessenger.Default.Register<ProductInBillSelectedMessage>(this, (r, m) => AddProductToBill(m.productInBill));
+        WeakReferenceMessenger.Default.Register<ProductsInBillSelectedMessage>(this, (r, m) => AddProductsToBill(m.productsInBill));
         WeakReferenceMessenger.Default.Register<QuantityChangedMessage>(this, (r, m) => CalculateTotal());
     }
 
-    private void AddProductToBill(ProductInBill productInBill)
+    private void AddProductsToBill(List<ProductInBill> productsInBill)
     {
-        if (Products == null)
-            Products = new ObservableCollection<ProductInBill>();
-
-        var productExist = Products.FirstOrDefault(p => p.Id == productInBill.Id);
-
-        if (productExist != null)
-            productExist.Quantity++;
-        else
-            Products.Add(productInBill);
-
-        CalculateTotal();
+        
     }
 
 

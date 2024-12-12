@@ -8,7 +8,7 @@
              Shell.NavBarIsVisible="False">
     <Grid
         Padding="20"
-        RowDefinitions="Auto, Auto, Auto, *"
+        RowDefinitions="Auto, Auto, Auto, Auto, *"
         RowSpacing="10">
         <Grid
             ColumnDefinitions=".50*, .50*"
@@ -37,10 +37,16 @@
             FontSize="Medium"
             FontAttributes="Bold" 
             Grid.Row="1"/>
+
+        <SearchBar
+            Text="{Binding SearchText}"
+            Placeholder="Search by Id, Name"
+            Grid.Row="2" />
+
         <Grid
             BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}"
             ColumnDefinitions="Auto, .20*, Auto, .50*, Auto, .30*, Auto"
-            Grid.Row="2">
+            Grid.Row="3">
             <BoxView
                 WidthRequest="1"
                 BackgroundColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray100}}"
@@ -76,9 +82,9 @@
 
         <CollectionView
             ItemsSource="{Binding Products}"
-            SelectedItem="{Binding SelectedProduct}"
-            SelectionMode="Single"
-            Grid.Row="3">
+            SelectedItems="{Binding SelectedProducts}"
+            SelectionMode="Multiple"
+            Grid.Row="4">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="model:Product">
                     <Grid

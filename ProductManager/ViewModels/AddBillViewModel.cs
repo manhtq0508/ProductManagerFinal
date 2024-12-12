@@ -32,7 +32,11 @@ public partial class AddBillViewModel : ObservableObject
     private ObservableCollection<ProductInBill>? products;
 
     [ObservableProperty]
-    private ProductInBill? selectedProduct;
+    private string? searchText;
+    private ObservableCollection<ProductInBill> _allProducts = new ObservableCollection<ProductInBill>();
+
+    [ObservableProperty]
+    private ObservableCollection<object> selectedProducts = new();
 
     [ObservableProperty]
     private long total;
@@ -42,31 +46,50 @@ public partial class AddBillViewModel : ObservableObject
         _billRepo = billRepo;
         _billDetailRepo = billDetailRepo;
 
-        WeakReferenceMessenger.Default.Register<ProductInBillSelectedMessage>(this, (r, m) => AddProductToBill(m.productInBill));
+        WeakReferenceMessenger.Default.Register<ProductsInBillSelectedMessage>(this, (r, m) => AddProductsToBill(m.productsInBill));
         WeakReferenceMessenger.Default.Register<QuantityChangedMessage>(this, (r, m) => CalculateTotal());
     }
 
-    private void AddProductToBill(ProductInBill productInBill)
+    private void AddProductsToBill(List<ProductInBill> productsInBill)
     {
-        if (Products == null)
-            Products = new ObservableCollection<ProductInBill>();
+        foreach (var product in productsInBill)
+        {
+            var productExist = _allProducts.FirstOrDefault(p => p.Id == product.Id);
 
-        var productExist = Products.FirstOrDefault(p => p.Id == productInBill.Id);
-
-        if (productExist != null)
-            productExist.Quantity++;
-        else
-            Products.Add(productInBill);
+            if (productExist != null)
+                productExist.Quantity += 1;
+            else
+                _allProducts.Add(product);
+        }
 
         CalculateTotal();
+        FilterProduct();
+    }
+
+    partial void OnSearchTextChanged(string? value)
+    {
+        FilterProduct();
+    }
+
+    private void FilterProduct()
+    {
+        if (string.IsNullOrWhiteSpace(SearchText))
+        {
+            Products = new ObservableCollection<ProductInBill>(_allProducts);
+            return;
+        }
+
+        string keyword = SearchText.ToLower().Trim();
+
+        Products = new ObservableCollection<ProductInBill>(
+            _allProducts.Where(p => p.Id.Contains(SearchText) ||
+                                    p.Name.ToLower().Contains(keyword))
+            );
     }
 
     public void CalculateTotal()
     {
-        if (Products == null)
-            return;
-
-        Total = (long)Products.Sum(p => p.Total);
+        Total = (long)_allProducts.Sum(p => p.Total);
     }
 
     [RelayCommand]
@@ -90,6 +113,14 @@ public partial class AddBillViewModel : ObservableObject
             return;
         }
 
+        // Check if bill has products
+        var isAllQuantityZero = _allProducts.All(p => p.Quantity == 0);
+        if (isAllQuantityZero)
+        {
+            await Shell.Current.DisplayAlert("Error", "Please add products to the bill", "OK");
+            return;
+        }
+
         try
         {
             var createdDateTime = BillDate.Date.Add(BillTime);
@@ -106,7 +137,7 @@ public partial class AddBillViewModel : ObservableObject
 
             // Create billNeedEdit details
             List<BillDetail> list = new List<BillDetail>();
-            foreach (var product in Products)
+            foreach (var product in _allProducts)
             {
                 if (product.Quantity == 0 || product.Id == null)
                     continue;
@@ -128,7 +159,6 @@ public partial class AddBillViewModel : ObservableObject
         catch (Exception ex)
         {
             await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
-            return;
         }
     }
 
@@ -147,16 +177,27 @@ public partial class AddBillViewModel : ObservableObject
     [RelayCommand]
     private async Task RemoveProduct()
     {
-        if (SelectedProduct == null)
+        if (SelectedProducts.Count == 0)
         {
             await Shell.Current.DisplayAlert("Error", "Please select a product to remove", "OK");
             return;
         }
 
-        if (Products == null)
-            return;
+        try
+        {
+            foreach (var product in SelectedProducts)
+            {
+                if (product is ProductInBill productInBill)
+                    _allProducts.Remove(productInBill);
+            }
+            SelectedProducts.Clear();
 
-        Products.Remove(SelectedProduct);
-        CalculateTotal();
+            FilterProduct();
+            CalculateTotal();
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
+        }
     }
 }
