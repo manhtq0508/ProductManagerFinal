@@ -122,19 +122,32 @@ public class BillDetailRepo(DatabaseService dbService) : IBillDetailRepo
                 .FirstOrDefaultAsync(bd => bd.BillId == billDetail.BillId && bd.ProductId == billDetail.ProductId);
 
             if (billDetailInDb == null)
-            {
-                throw new Exception("Bill detail is not found");
-            }
-
-            billDetailInDb.Quantity = billDetail.Quantity;
+                await AddBillDetailAsync(billDetail);
+            else
+                billDetailInDb.Quantity = billDetail.Quantity;
         }
 
         await dbService.AppDbContext.SaveChangesAsync();
 
-        // Deattach all entities
+        // De-attach all entities
         foreach (var billDetail in billDetails)
         {
             dbService.AppDbContext.Entry(billDetail).State = EntityState.Detached;
         }
+    }
+
+    public async Task DeleteListProductsAsync(string billId, List<ProductInBill> products)
+    {
+        foreach (var product in products)
+        {
+            var billDetail = dbService.AppDbContext.BillDetails.Find(billId, product.Id);
+
+            if (billDetail == null)
+                return;
+
+            dbService.AppDbContext.BillDetails.Remove(billDetail);
+        }
+
+        await dbService.AppDbContext.SaveChangesAsync();
     }
 }

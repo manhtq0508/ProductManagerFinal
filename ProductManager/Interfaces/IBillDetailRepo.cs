@@ -14,4 +14,5 @@ public interface IBillDetailRepo
     Task AddListBillDetailAsync(List<BillDetail> billDetails);
     Task UpdateListBillDetailAsync(List<BillDetail> billDetails);
     Task DeleteProductAsync(string billId, string productId);
+    Task DeleteListProductsAsync(string billId, List<ProductInBill> products);
 }

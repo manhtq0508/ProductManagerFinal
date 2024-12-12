@@ -27,12 +27,16 @@ public partial class EditBillViewModel : ObservableObject
     private long total;
 
     [ObservableProperty]
+    private string searchText = "";
+    private ObservableCollection<ProductInBill> _allProducts = new();
+
+    [ObservableProperty]
     private ObservableCollection<ProductInBill>? products;
 
     private List<ProductInBill> _productsDeleted = new List<ProductInBill>();
 
     [ObservableProperty]
-    private ProductInBill? selectedProduct;
+    private ObservableCollection<object> selectedProducts = new();
 
 
     public EditBillViewModel(IBillRepo billRepo, IBillDetailRepo billDetailRepo)
@@ -46,7 +50,22 @@ public partial class EditBillViewModel : ObservableObject
 
     private void AddProductsToBill(List<ProductInBill> productsInBill)
     {
-        
+        foreach (var product in productsInBill)
+        {
+            var productExist = _allProducts.FirstOrDefault(p => p.Id == product.Id);
+
+            if (productExist != null)
+                productExist.Quantity += 1;
+            else
+                _allProducts.Add(product);
+
+            var productDeleted = _productsDeleted.FirstOrDefault(p => p.Id == product.Id);
+            if (productDeleted != null)
+                _productsDeleted.Remove(productDeleted);
+        }
+
+        CalculateTotal();
+        FilterProduct();
     }
 
 
@@ -73,28 +92,37 @@ public partial class EditBillViewModel : ObservableObject
 
     private async Task LoadProductInBill()
     {
-        if (Products == null)
-            Products = new ObservableCollection<ProductInBill>();
-        else
-            Products.Clear();
-
         if (BillId == null)
             return;
 
-        var productList = await _billDetailRepo.GetListProductInBillAsync(BillId);
+        _allProducts = new(await _billDetailRepo.GetListProductInBillAsync(BillId));
 
-        foreach (var product in productList)
+        FilterProduct();
+    }
+
+    partial void OnSearchTextChanged(string value)
+    {
+        FilterProduct();
+    }
+
+    private void FilterProduct()
+    {
+        if (string.IsNullOrWhiteSpace(SearchText))
         {
-            Products.Add(product);
+            Products = new ObservableCollection<ProductInBill>(_allProducts);
+            return;
         }
+
+        string keyword = SearchText.ToLower().Trim();
+        Products = new ObservableCollection<ProductInBill>(
+            _allProducts.Where(p => p.Id.Contains(SearchText) ||
+                                    p.Name.ToLower().Contains(keyword))
+            );
     }
 
     private void CalculateTotal()
     {
-        if (Products == null)
-            Products = new ObservableCollection<ProductInBill>();
-
-        Total = Products.Sum(p => p.Total);
+        Total = _allProducts.Sum(p => p.Total);
     }
 
     [RelayCommand]
@@ -106,7 +134,15 @@ public partial class EditBillViewModel : ObservableObject
             return;
         }
 
-        if (Products == null || Products.Count == 0)
+        if (_allProducts == null || _allProducts.Count == 0)
+        {
+            await Shell.Current.DisplayAlert("Error", "Please add products to the bill", "OK");
+            return;
+        }
+
+        // Check if bill has products
+        var isAllQuantityZero = _allProducts.All(p => p.Quantity == 0);
+        if (isAllQuantityZero)
         {
             await Shell.Current.DisplayAlert("Error", "Please add products to the bill", "OK");
             return;
@@ -119,7 +155,7 @@ public partial class EditBillViewModel : ObservableObject
 
             // Update products in bill
             List<BillDetail> billDetails = new List<BillDetail>();
-            foreach (var product in Products)
+            foreach (var product in _allProducts)
             {
                 if (product.Quantity == 0 || product.Id == null)
                     continue;
@@ -133,6 +169,9 @@ public partial class EditBillViewModel : ObservableObject
             }
 
             await _billDetailRepo.UpdateListBillDetailAsync(billDetails);
+
+            // Delete products
+            await _billDetailRepo.DeleteListProductsAsync(BillId, new(_productsDeleted));
 
             WeakReferenceMessenger.Default.Send(new BillEditedMessage());
 
@@ -159,17 +198,24 @@ public partial class EditBillViewModel : ObservableObject
     [RelayCommand]
     private async Task RemoveProduct()
     {
-        if (SelectedProduct == null)
+        if (SelectedProducts.Count == 0)
         {
-            await Shell.Current.DisplayAlert("Error", "Please select a product to remove", "OK");
+            await Shell.Current.DisplayAlert("Error", "Please select products to remove", "OK");
             return;
         }
 
-        if (Products == null)
-            return;
+        foreach (var product in SelectedProducts)
+        {
 
-        Products.Remove(SelectedProduct);
-        _productsDeleted.Add(SelectedProduct);
+            if (product is ProductInBill productInBill)
+            {
+                _allProducts.Remove(productInBill);
+                _productsDeleted.Add(productInBill);
+            }
+        }
+        SelectedProducts.Clear();
+
         CalculateTotal();
+        FilterProduct();
     }
 }
