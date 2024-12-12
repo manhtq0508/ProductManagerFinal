@@ -6,7 +6,6 @@ using ProductManager.Interfaces;
 using ProductManager.Messages;
 using ProductManager.Views;
 using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
 
 namespace ProductManager.ViewModels;
 

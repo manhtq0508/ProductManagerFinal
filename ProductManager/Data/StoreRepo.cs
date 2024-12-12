@@ -40,6 +40,15 @@ public class StoreRepo(DatabaseService dbService) : IStoreRepo
         await dbService.AppDbContext.SaveChangesAsync();
     }
 
+    public async Task DeleteListStoresAsync(List<Store> stores)
+    {
+        foreach (var store in stores)
+        {
+            dbService.AppDbContext.Remove(store);
+        }
+        await dbService.AppDbContext.SaveChangesAsync();
+    }
+
     public async Task DeleteStoreAsync(Store store)
     {
         dbService.AppDbContext.Remove(store);

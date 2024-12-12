@@ -18,7 +18,7 @@ public partial class StoreViewModel : ObservableObject
     private ObservableCollection<Store>? stores;
 
     [ObservableProperty]
-    private Store? selectedStore;
+    private ObservableCollection<object> selectedStores = new();
 
     [ObservableProperty]
     private string? searchText;
@@ -98,32 +98,54 @@ public partial class StoreViewModel : ObservableObject
     [RelayCommand]
     private async Task EditStore()
     {
-        if (SelectedStore == null)
+        if (SelectedStores.Count == 0)
         {
             await Shell.Current.DisplayAlert("Error", "Please select a store to edit", "OK");
             return;
         }
 
-        await Shell.Current.GoToAsync($"{nameof(EditStorePage)}?storeId={SelectedStore.Id}");
+        if (SelectedStores.Count > 1)
+        {
+            await Shell.Current.DisplayAlert("Error", "Please select only one store to edit", "OK");
+            return;
+        }
+
+        if (SelectedStores[0] is Store selectedStore)
+            await Shell.Current.GoToAsync($"{nameof(EditStorePage)}?storeId={selectedStore.Id}");
     }
 
     [RelayCommand]
     private async Task DeleteStore()
     {
-        if (SelectedStore == null)
+        if (SelectedStores.Count == 0)
         {
-            await Shell.Current.DisplayAlert("Error", "Please select a store to delete", "OK");
+            await Shell.Current.DisplayAlert("Error", "Please select at least one store to delete", "OK");
             return;
         }
 
         try
         {
-            if (Stores == null)
+            if (_allStore == null)
                 return;
 
-            await _storeRepo.DeleteStoreAsync(SelectedStore);
-            Stores.Remove(SelectedStore);
+            List<Store> storeList = new List<Store>();
+            foreach (var store in SelectedStores)
+            {
+                if (store is Store s)
+                    storeList.Add(s);
+            }
+            SelectedStores.Clear();
+
+            await _storeRepo.DeleteListStoresAsync(storeList);
+
+            foreach (var store in storeList)
+            {
+                _allStore.Remove(store);
+            }
+
             await CalculateRevenue();
+
+            FilterStore();
         }
         catch (Exception ex)
         {
@@ -134,12 +156,21 @@ public partial class StoreViewModel : ObservableObject
     [RelayCommand]
     private async Task ViewBills()
     {
-        if (SelectedStore == null)
+        if (SelectedStores.Count == 0)
         {
-            await Shell.Current.DisplayAlert("Error", "Please select the store", "OK");
+            await Shell.Current.DisplayAlert("Error", "Please select a store to view bills", "OK");
             return;
         }
 
-        await Shell.Current.GoToAsync($"{nameof(BillPage)}?storeId={SelectedStore?.Id}");
+        if (SelectedStores.Count > 1)
+        {
+            await Shell.Current.DisplayAlert("Error", "Please select only one store to view bills", "OK");
+            return;
+        }
+
+        if (SelectedStores[0] is Store selectedStore)
+            await Shell.Current.GoToAsync($"{nameof(BillPage)}?storeId={selectedStore.Id}");
+        else
+            await Shell.Current.DisplayAlert("Error", "Invalid store", "OK");
     }
 }

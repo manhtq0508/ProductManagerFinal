@@ -98,8 +98,8 @@
 
         <CollectionView
             ItemsSource="{Binding Bills}"
-            SelectedItem="{Binding SelectedBill}"
-            SelectionMode="Single"
+            SelectedItems="{Binding SelectedBills}"
+            SelectionMode="Multiple"
             Grid.Row="4">
 
             <CollectionView.ItemTemplate>

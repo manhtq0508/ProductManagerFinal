@@ -10,4 +10,5 @@ public interface IBillRepo
     Task AddListBillsAsync(List<Bill> bills);
     Task UpdateBillAsync(Bill bill);
     Task DeleteBillAsync(Bill bill);
+    Task DeleteListBillsAsync(List<Bill> bills);
 }

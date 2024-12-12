@@ -11,4 +11,5 @@ public interface IStoreRepo
     Task AddListStoresAsync(List<Store> stores);
     Task UpdateStoreAsync(Store store);
     Task DeleteStoreAsync(Store store);
+    Task DeleteListStoresAsync(List<Store> stores);
 }

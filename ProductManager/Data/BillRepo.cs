@@ -42,6 +42,15 @@ public class BillRepo(DatabaseService dbService) : IBillRepo
         await dbService.AppDbContext.SaveChangesAsync();
     }
 
+    public async Task DeleteListBillsAsync(List<Bill> bills)
+    {
+        foreach (var bill in bills)
+        {
+            dbService.AppDbContext.Remove(bill);
+        }
+        await dbService.AppDbContext.SaveChangesAsync();
+    }
+
     public async Task<Bill> GetBillByIdAsync(string billId)
     {
         var bill = await dbService.AppDbContext.Bills

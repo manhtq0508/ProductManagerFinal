@@ -19,7 +19,7 @@ public partial class BillViewModel : ObservableObject
     private ObservableCollection<Bill>? bills;
 
     [ObservableProperty]
-    private Bill? selectedBill;
+    private ObservableCollection<object> selectedBills = new();
 
     [ObservableProperty]
     private string searchText = "";
@@ -50,17 +50,17 @@ public partial class BillViewModel : ObservableObject
         _billRepo = billRepo;
         _billDetailRepo = billDetailRepo;
 
-        WeakReferenceMessenger.Default.Register<BillAddedMessage>(this, (r, m) => OnBillAdded(m.newBill));
+        WeakReferenceMessenger.Default.Register<BillAddedMessage>(this, async (r, m) => await OnBillAdded(m.newBill));
         WeakReferenceMessenger.Default.Register<BillEditedMessage>(this, async (r, m) => await OnBillEditedAsync());
     }
 
-    private void OnBillAdded(Bill newBill)
+    private async Task OnBillAdded(Bill newBill)
     {
         if (_allBills == null)
             _allBills = new ObservableCollection<Bill>();
 
         _allBills.Add(newBill);
-        CalculateTotal().Wait();
+        await CalculateTotal();
         FilterBills();
 
         WeakReferenceMessenger.Default.Send(new BillChangedMessage());
@@ -185,19 +185,26 @@ public partial class BillViewModel : ObservableObject
     [RelayCommand]
     private async Task EditBill()
     {
-        if (SelectedBill == null)
+        if (SelectedBills.Count == 0)
         {
             await Shell.Current.DisplayAlert("Error", "Please select bill to edit", "OK");
             return;
         }
 
-        await Shell.Current.GoToAsync($"{nameof(EditBillPage)}?billId={SelectedBill.Id}");
+        if (SelectedBills.Count > 1)
+        {
+            await Shell.Current.DisplayAlert("Error", "Please select only one bill to edit", "OK");
+            return;
+        }
+
+        if (SelectedBills[0] is Bill selectedBill)
+            await Shell.Current.GoToAsync($"{nameof(EditBillPage)}?billId={selectedBill.Id}");
     }
 
     [RelayCommand]
     private async Task DeleteBill()
     {
-        if (SelectedBill == null)
+        if (SelectedBills.Count == 0)
         {
             await Shell.Current.DisplayAlert("Error", "Please select bill to delete", "OK");
             return;
@@ -207,9 +214,21 @@ public partial class BillViewModel : ObservableObject
         {
             if (_allBills == null) return;
 
-            await _billRepo.DeleteBillAsync(SelectedBill);
-            _allBills.Remove(SelectedBill);
+            List<Bill> bills = new List<Bill>();
+            foreach (var bill in SelectedBills)
+            {
+                if (bill is Bill b)
+                    bills.Add(b);
+            }
+            SelectedBills.Clear();
+
+            await _billRepo.DeleteListBillsAsync(bills);
+            foreach (var bill in bills)
+            {
+                _allBills.Remove(bill);
+            }
             await CalculateTotal();
+
             FilterBills();
 
             WeakReferenceMessenger.Default.Send(new BillChangedMessage());
@@ -223,12 +242,19 @@ public partial class BillViewModel : ObservableObject
     [RelayCommand]
     private async Task DetailOfBill()
     {
-        if (SelectedBill == null)
+        if (SelectedBills.Count == 0)
         {
-            await Shell.Current.DisplayAlert("Error", "Select a bill to view detail", "OK");
+            await Shell.Current.DisplayAlert("Error", "Please select bill to view detail", "OK");
             return;
         }
 
-        await Shell.Current.GoToAsync($"{nameof(BillDetailPage)}?billId={SelectedBill.Id}");
+        if (SelectedBills.Count > 1)
+        {
+            await Shell.Current.DisplayAlert("Error", "Please select only one bill to view detail", "OK");
+            return;
+        }
+
+        if (SelectedBills[0] is Bill selectedBill)
+            await Shell.Current.GoToAsync($"{nameof(BillDetailPage)}?billId={selectedBill.Id}");
     }
 }

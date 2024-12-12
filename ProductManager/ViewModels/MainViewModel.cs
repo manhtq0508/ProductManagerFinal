@@ -8,7 +8,6 @@ using ProductManager.Services;
 using ProductManager.Views;
 
 namespace ProductManager.ViewModels;
-
 public partial class MainViewModel : ObservableObject
 {
     private readonly DatabaseService _dbService;

@@ -69,8 +69,8 @@
 
         <CollectionView
             ItemsSource="{Binding Stores}"
-            SelectionMode="Single"
-            SelectedItem="{Binding SelectedStore}"
+            SelectionMode="Multiple"
+            SelectedItems="{Binding SelectedStores}"
             Grid.Row="3">
 
             <CollectionView.ItemTemplate>
