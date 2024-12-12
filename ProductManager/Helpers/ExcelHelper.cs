@@ -7,14 +7,10 @@ namespace ProductManager.Helpers;
 
 public class ExcelHelper(IStoreRepo storeRepo, IBillRepo billRepo, IProductRepo productRepo, IBillDetailRepo billDetailRepo)
 {
-    private readonly string FILE_NAME = $"ProductManagerReport_{DateTime.Now:dd_MM_yyyy_HH_mm_ss}.xlsx";
-    
     // Export
     public async Task Export(string path)
     {
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-        var filePath = Path.Combine(path, FILE_NAME);
 
         using (var excelPackage = new ExcelPackage())
         {
@@ -22,7 +18,7 @@ public class ExcelHelper(IStoreRepo storeRepo, IBillRepo billRepo, IProductRepo 
             await ExportProducts(excelPackage);
             await ExportBills(excelPackage);
 
-            excelPackage.SaveAs(new FileInfo(filePath));
+            excelPackage.SaveAs(new FileInfo(path));
         }
     }
 
@@ -99,7 +95,7 @@ public class ExcelHelper(IStoreRepo storeRepo, IBillRepo billRepo, IProductRepo 
     {
         var stores = await storeRepo.GetStoresAsync();
 
-        foreach (var store in stores) 
+        foreach (var store in stores)
         {
             int row = 1; // Start from row 1
 
@@ -210,17 +206,119 @@ public class ExcelHelper(IStoreRepo storeRepo, IBillRepo billRepo, IProductRepo 
 
         int row = 2; // Start from row 2, row 1 is header
 
+        List<Store> stores = new();
         while (worksheet.Cells[row, ID_COLUMN].Value != null)
         {
-            
+            var store = new Store
+            {
+                Id = worksheet.Cells[row, ID_COLUMN].Value.ToString() ?? throw new Exception("Store ID is required"),
+                Name = worksheet.Cells[row, NAME_COLUMN].Value.ToString() ?? throw new Exception("Store name is required"),
+                Address = worksheet.Cells[row, ADDRESS_COLUMN].Value.ToString() ?? throw new Exception("Store address is required")
+            };
+
+            stores.Add(store);
+            row++;
         }
+
+        await storeRepo.AddListStoresAsync(stores);
     }
 
     private async Task ImportProducts(ExcelPackage excelPackage)
     {
+        var worksheet = excelPackage.Workbook.Worksheets["Products"];
+        if (worksheet == null)
+            throw new Exception("Missing 'Products' worksheet");
+
+        const int ID_COLUMN = 1;
+        const int NAME_COLUMN = 2;
+        const int PRICE_COLUMN = 3;
+
+        int row = 2; // Start from row 2, row 1 is header
+
+        List<Product> products = new();
+        while (worksheet.Cells[row, ID_COLUMN].Value != null)
+        {
+            var product = new Product
+            {
+                Id = worksheet.Cells[row, ID_COLUMN].Value.ToString() ?? throw new Exception("Product ID is required"),
+                Name = worksheet.Cells[row, NAME_COLUMN].Value.ToString() ?? throw new Exception("Product name is required"),
+                Price = int.Parse(worksheet.Cells[row, PRICE_COLUMN].Value.ToString() ?? throw new Exception("Product price is required"))
+            };
+            products.Add(product);
+            row++;
+        }
+
+        await productRepo.AddListProductsAsync(products);
     }
 
     private async Task ImportBills(ExcelPackage excelPackage)
     {
+        var stores = await storeRepo.GetStoresAsync();
+
+        foreach (var store in stores)
+        {
+            var worksheet = excelPackage.Workbook.Worksheets[$"{store.Id}_{store.Name}"];
+            if (worksheet == null)
+                throw new Exception($"Missing '{store.Id}_{store.Name}' worksheet");
+
+            int row = 1; // Start from row 1
+
+            // Import bills
+            while (worksheet.Cells[row, 1].Value != null)
+            {
+                var billId = await ImportBillInfo(worksheet, store.Id, row);
+                row += 3; // Skip 3 rows for Bill ID, Created at and products header
+                row = await ImportProductsInBill(worksheet, billId, row);
+            }
+        }
+    }
+
+    private async Task<string> ImportBillInfo(ExcelWorksheet worksheet, string storeId, int rowStart)
+    {
+        int BILL_ID_TITLE_ROW = rowStart;
+        int BILL_ID_DATA_COLUMN = 2;
+        int CREATED_AT_TOTAL_ROW = rowStart + 1;
+        int CREATED_AT_DATA_COLUMN = 2;
+
+        string billId = worksheet.Cells[BILL_ID_TITLE_ROW, BILL_ID_DATA_COLUMN].Value.ToString() ?? throw new Exception("Bill ID is required");
+        DateTime createdAt = DateTime.Parse(worksheet.Cells[CREATED_AT_TOTAL_ROW, CREATED_AT_DATA_COLUMN].Value.ToString() ?? throw new Exception("Created at is required"));
+
+        var bill = new Bill
+        {
+            Id = billId,
+            CreatedDateTime = createdAt,
+            StoreId = storeId
+        };
+
+        await billRepo.AddBillAsync(bill);
+
+        return bill.Id;
+    }
+    private async Task<int> ImportProductsInBill(ExcelWorksheet worksheet, string billId, int rowStart)
+    {
+        int ID_COLUMN = 1;
+        int QUANTITY_COLUMN = 4;
+
+        int row = rowStart;
+
+        List<BillDetail> billDetails = new();
+
+        while (worksheet.Cells[row, ID_COLUMN].Value != null)
+        {
+            string productId = worksheet.Cells[row, ID_COLUMN].Value.ToString() ?? throw new Exception("Product ID is required");
+            int quantity = int.Parse(worksheet.Cells[row, QUANTITY_COLUMN].Value.ToString() ?? throw new Exception("Product quantity is required"));
+            var billDetail = new BillDetail
+            {
+                BillId = billId,
+                ProductId = productId,
+                Quantity = quantity
+            };
+            billDetails.Add(billDetail);
+            row++;
+        }
+
+        await billDetailRepo.AddListBillDetailAsync(billDetails);
+
+        return rowStart + billDetails.Count + 1; // Skip 1 row for total
     }
 }

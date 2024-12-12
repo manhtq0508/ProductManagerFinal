@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Maui.Storage;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ProductManager.Entities;
 using ProductManager.Helpers;
@@ -58,6 +59,7 @@ public partial class MainViewModel : ObservableObject
         try
         {
             var excelHelper = new ExcelHelper(_storeRepo, _billRepo, _productRepo, _billDetailRepo);
+            await excelHelper.Import(file.FullPath);
         }
         catch (Exception ex)
         {
@@ -68,10 +70,16 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task ExportToFile()
     {
+        var defaultFileName = $"ProductManagerReport_{DateTime.Now:dd_MM_yyyy_HH_mm_ss}.xlsx";
+
+        var file = await FileSaver.Default.SaveAsync(defaultFileName, new MemoryStream(), CancellationToken.None);
+        if (!file.IsSuccessful)
+            return;
+
         try
         {
             var excelHelper = new ExcelHelper(_storeRepo, _billRepo, _productRepo, _billDetailRepo);
-            await excelHelper.Export("D:/");
+            await excelHelper.Export(file.FilePath);
         }
         catch (Exception ex)
         {
