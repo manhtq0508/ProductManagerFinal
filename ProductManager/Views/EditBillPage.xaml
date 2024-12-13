@@ -58,7 +58,7 @@
                 Grid.Row="1"
                 Grid.Column="0"/>
             <DatePicker
-                Date="{Binding BillNeedEdit.CreatedDateTime}"
+                Date="{Binding Date}"
                 Grid.Row="1"
                 Grid.Column="1" />
             <Label
@@ -67,7 +67,7 @@
                 Grid.Row="2"
                 Grid.Column="0" />
             <TimePicker
-                Time="{Binding BillNeedEdit.CreatedDateTime.TimeOfDay}"
+                Time="{Binding Time}"
                 Grid.Row="2"
                 Grid.Column="1" />
         </Grid>

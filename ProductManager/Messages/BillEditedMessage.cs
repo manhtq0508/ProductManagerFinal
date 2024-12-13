@@ -1,3 +1,5 @@
-﻿namespace ProductManager.Messages;
+﻿using ProductManager.Entities;
 
-public record BillEditedMessage();
+namespace ProductManager.Messages;
+
+public record BillEditedMessage(Bill billEdited);

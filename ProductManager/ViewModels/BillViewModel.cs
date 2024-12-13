@@ -16,14 +16,16 @@ public partial class BillViewModel : ObservableObject
     private IBillDetailRepo _billDetailRepo;
 
     [ObservableProperty]
-    private ObservableCollection<Bill>? bills;
+    private ObservableCollection<Bill> bills = new();
 
     [ObservableProperty]
     private ObservableCollection<object> selectedBills = new();
 
+    private ObservableCollection<object> _selectedLog = new();
+
     [ObservableProperty]
     private string searchText = "";
-    private ObservableCollection<Bill>? _allBills;
+    private ObservableCollection<Bill> _allBills = new();
 
     [ObservableProperty]
     private bool isFilterByDateTime = false;
@@ -51,24 +53,27 @@ public partial class BillViewModel : ObservableObject
         _billDetailRepo = billDetailRepo;
 
         WeakReferenceMessenger.Default.Register<BillAddedMessage>(this, async (r, m) => await OnBillAdded(m.newBill));
-        WeakReferenceMessenger.Default.Register<BillEditedMessage>(this, async (r, m) => await OnBillEditedAsync());
+        WeakReferenceMessenger.Default.Register<BillEditedMessage>(this, async (r, m) => await OnBillEditedAsync(m.billEdited));
     }
 
     private async Task OnBillAdded(Bill newBill)
     {
-        if (_allBills == null)
-            _allBills = new ObservableCollection<Bill>();
-
         _allBills.Add(newBill);
         await CalculateTotal();
         FilterBills();
 
         WeakReferenceMessenger.Default.Send(new BillChangedMessage());
     }
-    private async Task OnBillEditedAsync()
+    private async Task OnBillEditedAsync(Bill billEdited)
     {
-        await LoadBillsAsync();
+        _allBills.Where(b => b.Id == billEdited.Id).ToList().ForEach(b =>
+        {
+            b.CreatedDateTime = billEdited.CreatedDateTime;
+        });
+
         await CalculateTotal();
+
+        FilterBills();
 
         WeakReferenceMessenger.Default.Send(new BillChangedMessage());
     }
@@ -130,8 +135,6 @@ public partial class BillViewModel : ObservableObject
 
     private void FilterBillsWithDateTime()
     {
-        if (_allBills == null) return;
-
         var fromDateTime = FromDate.Date.Add(FromTime);
         var toDateTime = ToDate.Date.Add(ToTime);
 
@@ -152,11 +155,10 @@ public partial class BillViewModel : ObservableObject
 
     private void FilterBillsById()
     {
-        if (_allBills == null) return;
-
         if (string.IsNullOrWhiteSpace(SearchText))
         {
             Bills = new ObservableCollection<Bill>(_allBills);
+            return;
         }
 
         Bills = new ObservableCollection<Bill>(_allBills.Where(b => b.Id.Contains(SearchText)));
@@ -167,6 +169,20 @@ public partial class BillViewModel : ObservableObject
         if (StoreId == null) return;
 
         Total = await _billDetailRepo.GetRevenueOfStoreByIdAsync(StoreId);
+    }
+
+    [RelayCommand]
+    private void ItemTapped(Bill bill)
+    {
+        if (bill == null)
+            return;
+
+        if (_selectedLog.Contains(bill))
+            _selectedLog.Remove(bill);
+        else
+            _selectedLog.Add(bill);
+
+        SelectedBills = new ObservableCollection<object>(_selectedLog);
     }
 
     [RelayCommand]
@@ -212,8 +228,6 @@ public partial class BillViewModel : ObservableObject
 
         try
         {
-            if (_allBills == null) return;
-
             List<Bill> bills = new List<Bill>();
             foreach (var bill in SelectedBills)
             {

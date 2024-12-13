@@ -24,6 +24,12 @@ public partial class EditBillViewModel : ObservableObject
     private Bill? billNeedEdit;
 
     [ObservableProperty]
+    private DateTime date = DateTime.Now;
+
+    [ObservableProperty]
+    private TimeSpan time = DateTime.Now.TimeOfDay;
+
+    [ObservableProperty]
     private long total;
 
     [ObservableProperty]
@@ -68,7 +74,6 @@ public partial class EditBillViewModel : ObservableObject
         FilterProduct();
     }
 
-
     partial void OnBillIdChanged(string? value)
     {
         if (value != null)
@@ -88,6 +93,8 @@ public partial class EditBillViewModel : ObservableObject
         }
 
         BillNeedEdit = await _billRepo.GetBillByIdAsync(BillId);
+        Date = BillNeedEdit.CreatedDateTime;
+        Time = BillNeedEdit.CreatedDateTime.TimeOfDay;
     }
 
     private async Task LoadProductInBill()
@@ -103,6 +110,22 @@ public partial class EditBillViewModel : ObservableObject
     partial void OnSearchTextChanged(string value)
     {
         FilterProduct();
+    }
+
+    partial void OnDateChanged(DateTime value)
+    {
+        if (BillNeedEdit == null)
+            return;
+
+        BillNeedEdit.CreatedDateTime = Date;
+    }
+
+    partial void OnTimeChanged(TimeSpan value)
+    {
+        if (BillNeedEdit == null)
+            return;
+
+        BillNeedEdit.CreatedDateTime = new DateTime(Date.Year, Date.Month, Date.Day, Time.Hours, Time.Minutes, Time.Seconds);
     }
 
     private void FilterProduct()
@@ -128,7 +151,7 @@ public partial class EditBillViewModel : ObservableObject
     [RelayCommand]
     private async Task SaveBill()
     {
-        if (BillNeedEdit == null)
+        if (BillNeedEdit == null || BillId == null)
         {
             await Shell.Current.DisplayAlert("Error", "Bill is null. Contact admin", "OK");
             return;
@@ -173,7 +196,7 @@ public partial class EditBillViewModel : ObservableObject
             // Delete products
             await _billDetailRepo.DeleteListProductsAsync(BillId, new(_productsDeleted));
 
-            WeakReferenceMessenger.Default.Send(new BillEditedMessage());
+            WeakReferenceMessenger.Default.Send(new BillEditedMessage(BillNeedEdit));
 
             await Shell.Current.GoToAsync("..");
         }
