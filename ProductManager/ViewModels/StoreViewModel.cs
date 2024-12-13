@@ -15,17 +15,19 @@ public partial class StoreViewModel : ObservableObject
     private IBillDetailRepo _billDetailRepo; // To calculate revenue
 
     [ObservableProperty]
-    private ObservableCollection<Store>? stores;
+    private ObservableCollection<Store> stores = new();
 
     [ObservableProperty]
     private ObservableCollection<object> selectedStores = new();
 
-    [ObservableProperty]
-    private string? searchText;
-    private ObservableCollection<Store>? _allStore;
+    private ObservableCollection<object> _selectedLog = new();
 
     [ObservableProperty]
-    private long? revenue;
+    private string searchText = "";
+    private ObservableCollection<Store> _allStore = new();
+
+    [ObservableProperty]
+    private long revenue = 0;
 
     public StoreViewModel(IStoreRepo storeRepo, IBillDetailRepo billDetailRepo)
     {
@@ -42,16 +44,13 @@ public partial class StoreViewModel : ObservableObject
         WeakReferenceMessenger.Default.Register<BillChangedMessage>(this, async (r, m) => await CalculateRevenue());
     }
 
-    partial void OnSearchTextChanged(string? value)
+    partial void OnSearchTextChanged(string value)
     {
         FilterStore();
     }
 
     private void FilterStore()
     {
-        if (_allStore == null)
-            return;
-
         if (string.IsNullOrWhiteSpace(SearchText))
         {
             Stores = new ObservableCollection<Store>(_allStore);
@@ -81,12 +80,23 @@ public partial class StoreViewModel : ObservableObject
 
     private void OnStoreAdded(Store newStore)
     {
-        if (_allStore == null)
-            _allStore = new ObservableCollection<Store>();
-
         _allStore.Add(newStore);
 
         FilterStore();
+    }
+
+    [RelayCommand]
+    private void ItemTapped(Store store)
+    {
+        if (store == null)
+            return;
+
+        if (_selectedLog.Contains(store))
+            _selectedLog.Remove(store);
+        else
+            _selectedLog.Add(store);
+
+        SelectedStores = new ObservableCollection<object>(_selectedLog);
     }
 
     [RelayCommand]
@@ -125,9 +135,6 @@ public partial class StoreViewModel : ObservableObject
 
         try
         {
-            if (_allStore == null)
-                return;
-
             List<Store> storeList = new List<Store>();
             foreach (var store in SelectedStores)
             {
