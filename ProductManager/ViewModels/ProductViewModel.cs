@@ -14,14 +14,16 @@ public partial class ProductViewModel : ObservableObject
     private IProductRepo _productRepo;
 
     [ObservableProperty]
-    private ObservableCollection<Product>? products;
+    private ObservableCollection<Product> products = new();
 
     [ObservableProperty]
     private ObservableCollection<object> selectedProducts = new();
 
+    private ObservableCollection<object> _selectedLog = new();
+
     [ObservableProperty]
     private string? searchText;
-    private ObservableCollection<Product>? _allProducts;
+    private ObservableCollection<Product> _allProducts = new();
 
     public ProductViewModel(IProductRepo productRepo)
     {
@@ -30,22 +32,25 @@ public partial class ProductViewModel : ObservableObject
 
         // Register to receive messages
         WeakReferenceMessenger.Default.Register<ProductAddedMessage>(this, (r, m) => OnProductAdded(m.newProduct));
-        WeakReferenceMessenger.Default.Register<ProductEditedMessage>(this, async (r, m) => await OnProductEdited(m.editedProduct));
+        WeakReferenceMessenger.Default.Register<ProductEditedMessage>(this, (r, m) => OnProductEdited(m.editedProduct));
     }
 
     private void OnProductAdded(Product newProduct)
     {
-        if (_allProducts == null)
-            _allProducts = new ObservableCollection<Product>();
-
         _allProducts.Add(newProduct);
 
         FilterProduct();
     }
 
-    private async Task OnProductEdited(Product editedProduct)
+    private void OnProductEdited(Product editedProduct)
     {
-        await LoadProducts();
+        _allProducts.Where(p => p.Id == editedProduct.Id).ToList().ForEach(p =>
+        {
+            p.Name = editedProduct.Name;
+            p.Price = editedProduct.Price;
+        });
+
+        FilterProduct();
     }
 
     private async Task LoadProducts()
@@ -62,9 +67,6 @@ public partial class ProductViewModel : ObservableObject
 
     private void FilterProduct()
     {
-        if (_allProducts == null)
-            return;
-
         if (string.IsNullOrWhiteSpace(SearchText))
         {
             Products = new ObservableCollection<Product>(_allProducts);
@@ -77,6 +79,20 @@ public partial class ProductViewModel : ObservableObject
             _allProducts.Where(p => p.Id.Contains(SearchText) ||
                                     p.Name.ToLower().Contains(keyword))
         );
+    }
+
+    [RelayCommand]
+    private void ItemTapped(Product product)
+    {
+        if (product == null)
+            return;
+
+        if (_selectedLog.Contains(product))
+            _selectedLog.Remove(product);
+        else
+            _selectedLog.Add(product);
+
+        SelectedProducts = new ObservableCollection<object>(_selectedLog);
     }
 
     [RelayCommand]
@@ -115,9 +131,6 @@ public partial class ProductViewModel : ObservableObject
 
         try
         {
-            if (_allProducts == null)
-                return;
-
             List<Product> products = new List<Product>();
             foreach (var product in SelectedProducts)
             {
