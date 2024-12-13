@@ -9,8 +9,8 @@ public class Bill
     public required DateTime CreatedDateTime { get; set; }
 
     // Navigation properties
-    public string StoreId { get; set; }
-    public Store Store { get; set; }
+    public string? StoreId { get; set; }
+    public Store? Store { get; set; }
 
     public List<BillDetail> BillDetails { get; set; } = [];
 }
