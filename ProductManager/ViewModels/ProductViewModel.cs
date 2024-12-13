@@ -138,6 +138,7 @@ public partial class ProductViewModel : ObservableObject
                     products.Add(p);
             }
             SelectedProducts.Clear();
+            _selectedLog.Clear();
 
             await _productRepo.DeleteListProductsAsync(products);
 

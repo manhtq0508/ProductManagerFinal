@@ -33,10 +33,12 @@ public partial class AddBillViewModel : ObservableObject
 
     [ObservableProperty]
     private string? searchText;
-    private ObservableCollection<ProductInBill> _allProducts = new ObservableCollection<ProductInBill>();
+    private ObservableCollection<ProductInBill> _allProducts = new();
 
     [ObservableProperty]
     private ObservableCollection<object> selectedProducts = new();
+
+    private ObservableCollection<object> _selectedLog = new();
 
     [ObservableProperty]
     private long total;
@@ -93,6 +95,20 @@ public partial class AddBillViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void ItemTapped(ProductInBill product)
+    {
+        if (product == null)
+            return;
+
+        if (_selectedLog.Contains(product))
+            _selectedLog.Remove(product);
+        else
+            _selectedLog.Add(product);
+
+        SelectedProducts = new ObservableCollection<object>(_selectedLog);
+    }
+
+    [RelayCommand]
     private async Task AddBill()
     {
         if (string.IsNullOrWhiteSpace(BillId))
@@ -123,7 +139,7 @@ public partial class AddBillViewModel : ObservableObject
 
         try
         {
-            var createdDateTime = BillDate.Date.Add(BillTime);
+            var createdDateTime = new DateTime(BillDate.Year, BillDate.Month, BillDate.Day, BillTime.Hours, BillTime.Minutes, BillTime.Seconds);
 
             var newBill = new Bill
             {

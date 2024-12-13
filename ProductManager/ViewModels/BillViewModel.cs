@@ -235,6 +235,7 @@ public partial class BillViewModel : ObservableObject
                     bills.Add(b);
             }
             SelectedBills.Clear();
+            _selectedLog.Clear();
 
             await _billRepo.DeleteListBillsAsync(bills);
             foreach (var bill in bills)

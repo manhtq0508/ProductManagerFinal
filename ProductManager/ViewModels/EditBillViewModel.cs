@@ -44,6 +44,8 @@ public partial class EditBillViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<object> selectedProducts = new();
 
+    private ObservableCollection<object> _selectedLog = new();
+
 
     public EditBillViewModel(IBillRepo billRepo, IBillDetailRepo billDetailRepo)
     {
@@ -112,22 +114,6 @@ public partial class EditBillViewModel : ObservableObject
         FilterProduct();
     }
 
-    partial void OnDateChanged(DateTime value)
-    {
-        if (BillNeedEdit == null)
-            return;
-
-        BillNeedEdit.CreatedDateTime = Date;
-    }
-
-    partial void OnTimeChanged(TimeSpan value)
-    {
-        if (BillNeedEdit == null)
-            return;
-
-        BillNeedEdit.CreatedDateTime = new DateTime(Date.Year, Date.Month, Date.Day, Time.Hours, Time.Minutes, Time.Seconds);
-    }
-
     private void FilterProduct()
     {
         if (string.IsNullOrWhiteSpace(SearchText))
@@ -146,6 +132,20 @@ public partial class EditBillViewModel : ObservableObject
     private void CalculateTotal()
     {
         Total = _allProducts.Sum(p => p.Total);
+    }
+
+    [RelayCommand]
+    private void ItemTapped(ProductInBill product)
+    {
+        if (product == null)
+            return;
+
+        if (_selectedLog.Contains(product))
+            _selectedLog.Remove(product);
+        else
+            _selectedLog.Add(product);
+
+        SelectedProducts = new ObservableCollection<object>(_selectedLog);
     }
 
     [RelayCommand]
@@ -174,6 +174,7 @@ public partial class EditBillViewModel : ObservableObject
         try
         {
             // Update bill
+            BillNeedEdit.CreatedDateTime = new DateTime(Date.Year, Date.Month, Date.Day, Time.Hours, Time.Minutes, Time.Seconds);
             await _billRepo.UpdateBillAsync(BillNeedEdit);
 
             // Update products in bill
@@ -237,6 +238,7 @@ public partial class EditBillViewModel : ObservableObject
             }
         }
         SelectedProducts.Clear();
+        _selectedLog.Clear();
 
         CalculateTotal();
         FilterProduct();

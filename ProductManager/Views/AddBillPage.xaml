@@ -179,6 +179,13 @@
                     <Grid
                         Padding="0, 10"
                         ColumnDefinitions=".15*, .25*, .20*, .20*, .20*">
+
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:AddBillViewModel}}, Path=ItemTappedCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Grid.GestureRecognizers>
+
                         <Label
                             Text="{Binding Id}"
                             VerticalOptions="Center"

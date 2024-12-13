@@ -153,6 +153,7 @@ public partial class StoreViewModel : ObservableObject
                     storeList.Add(s);
             }
             SelectedStores.Clear();
+            _selectedLog.Clear();
 
             await _storeRepo.DeleteListStoresAsync(storeList);
 
