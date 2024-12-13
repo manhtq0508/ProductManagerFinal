@@ -39,9 +39,20 @@ public partial class StoreViewModel : ObservableObject
 
         // Register to receive messages
         WeakReferenceMessenger.Default.Register<StoreAddedMessage>(this, (r, m) => OnStoreAdded(m.newStore));
-        WeakReferenceMessenger.Default.Register<StoreEditedMessage>(this, async (r, m) => await LoadStoresAsync());
+        WeakReferenceMessenger.Default.Register<StoreEditedMessage>(this, (r, m) => OnStoreEdited(m.storeEdited));
         // Update revenue when a billNeedEdit is added or edited
         WeakReferenceMessenger.Default.Register<BillChangedMessage>(this, async (r, m) => await CalculateRevenue());
+    }
+
+    private void OnStoreEdited(Store storeEdited)
+    {
+        _allStore.Where(s => s.Id == storeEdited.Id).ToList().ForEach(s =>
+        {
+            s.Name = storeEdited.Name;
+            s.Address = storeEdited.Address;
+        });
+
+        FilterStore();
     }
 
     partial void OnSearchTextChanged(string value)

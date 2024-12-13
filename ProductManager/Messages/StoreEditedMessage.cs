@@ -2,4 +2,4 @@
 
 namespace ProductManager.Messages;
 
-public record StoreEditedMessage;
+public record StoreEditedMessage(Store storeEdited);

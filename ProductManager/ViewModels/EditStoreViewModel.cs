@@ -55,7 +55,7 @@ public partial class EditStoreViewModel : ObservableObject
         {
             await _storeRepo.UpdateStoreAsync(StoreNeedEdited);
 
-            WeakReferenceMessenger.Default.Send(new StoreEditedMessage());
+            WeakReferenceMessenger.Default.Send(new StoreEditedMessage(StoreNeedEdited));
 
             await Shell.Current.GoToAsync("..");
         }
