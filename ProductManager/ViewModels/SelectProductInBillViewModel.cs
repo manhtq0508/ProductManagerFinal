@@ -14,7 +14,7 @@ public partial class SelectProductInBillViewModel : ObservableObject
     private IProductRepo _productRepo;
 
     [ObservableProperty]
-    private ObservableCollection<Product>? products;
+    private ObservableCollection<Product> products = new();
 
     [ObservableProperty]
     private string searchText = "";
@@ -22,6 +22,8 @@ public partial class SelectProductInBillViewModel : ObservableObject
 
     [ObservableProperty]
     private ObservableCollection<object> selectedProducts = new();
+
+    private ObservableCollection<object> _selectedLog = new();
 
     public SelectProductInBillViewModel(IProductRepo productRepo)
     {
@@ -53,6 +55,20 @@ public partial class SelectProductInBillViewModel : ObservableObject
             _allProducts.Where(p => p.Id.Contains(SearchText) || 
                                     p.Name.ToLower().Contains(keyword))
         );
+    }
+
+    [RelayCommand]
+    private void ItemTapped(Product product)
+    {
+        if (product == null)
+            return;
+
+        if (_selectedLog.Contains(product))
+            _selectedLog.Remove(product);
+        else
+            _selectedLog.Add(product);
+
+        SelectedProducts = new ObservableCollection<object>(_selectedLog);
     }
 
     [RelayCommand]
