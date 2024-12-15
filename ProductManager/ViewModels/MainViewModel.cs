@@ -175,4 +175,16 @@ public partial class MainViewModel : ObservableObject
             await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
         }
     }
+
+    [RelayCommand]
+    private async Task Logout()
+    {
+        await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+    }
+
+    [RelayCommand]
+    private async Task ChangeCredentials()
+    {
+        await Shell.Current.GoToAsync(nameof(ChangeCredentialsPage));
+    }
 }

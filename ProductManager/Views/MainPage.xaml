@@ -74,6 +74,21 @@
             </HorizontalStackLayout>
 
             <HorizontalStackLayout
+                HorizontalOptions="Center"
+                Spacing="10">
+                <Button
+                    Text="Log out"
+                    WidthRequest="180"
+                    BackgroundColor="Red" 
+                    Command="{Binding LogoutCommand}"
+                    Style="{StaticResource LogoutButtonStyle}"/>
+                <Button
+                    Text="Change Credentials"
+                    Command="{Binding ChangeCredentialsCommand}"
+                    WidthRequest="180"/>
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout
                 Spacing="10"
                 HorizontalOptions="CenterAndExpand">
                 <BoxView

@@ -6,11 +6,11 @@ namespace ProductManager.ViewModels;
 
 public partial class LoginViewModel : ObservableObject
 {
-    private const string USERNAME = "admin";
-    private const string PASSWORD = "admin";
+    private string USERNAME = "admin";
+    private string PASSWORD = "admin";
 
     [ObservableProperty]
-    private bool showLogingInScreen = false;
+    private bool showLoggingInScreen = false;
 
     [ObservableProperty]
     private string? username;
@@ -27,17 +27,30 @@ public partial class LoginViewModel : ObservableObject
             return;
         }
 
+        if (Preferences.ContainsKey("username"))
+        {
+            USERNAME = Preferences.Get("username", "admin");
+        }
+
+        if (Preferences.ContainsKey("password"))
+        {
+            PASSWORD = Preferences.Get("password", "admin");
+        }
+
         try
         {
             if (Username == USERNAME && Password == PASSWORD)
             {
-                ShowLogingInScreen = true;
+                ShowLoggingInScreen = true;
 
                 // IMPORTANT: This line is used prevent UI from blocking when navigating to MainPage
-                // Remove it will make LogingInScreen not showing
+                // Remove it will make LoggingInScreen not showing
                 await Task.Delay(100);
 
                 await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+
+                ShowLoggingInScreen = false;
+                Password = "";
             }
             else
             {
@@ -48,5 +61,11 @@ public partial class LoginViewModel : ObservableObject
         {
             await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
         }
+    }
+
+    [RelayCommand]
+    private async Task ForgotCredentials()
+    {
+        await Shell.Current.GoToAsync(nameof(ChangeCredentialsPage));
     }
 }

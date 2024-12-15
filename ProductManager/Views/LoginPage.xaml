@@ -51,13 +51,18 @@
                             <Button
                                 Text="Login"
                                 Command="{Binding LoginCommand}"/>
+                            <Button
+                                Text="Forgot credentials"
+                                BackgroundColor="Red"
+                                Style="{StaticResource LogoutButtonStyle}"
+                                Command="{Binding ForgotCredentialsCommand}"/>
                         </VerticalStackLayout>
                     </Grid>
                 </Grid>
             </Border>
         </Grid>
         <Grid
-            IsVisible="{Binding ShowLogingInScreen}"
+            IsVisible="{Binding ShowLoggingInScreen}"
             RowDefinitions="*"
             Opacity="0.9"
             BackgroundColor="{StaticResource Gray600}">

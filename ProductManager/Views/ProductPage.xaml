@@ -35,12 +35,29 @@
                 Grid.Column="3" />
         </Grid>
 
-        <Label
-            Text="Product List"
-            FontAttributes="Bold"
-            FontSize="Large"
-            Grid.Row="1"/>
+        <Grid
+            ColumnDefinitions=".50*, .50*"
+            Grid.Row="1">
+            <Label
+                Text="Product List"
+                FontAttributes="Bold"
+                FontSize="Large"
+                Grid.Column="0"/>
 
+            <HorizontalStackLayout
+                HorizontalOptions="End"
+                Spacing="10"
+                Grid.Column="1">
+                <Button
+                    Text="Select All" 
+                    Command="{Binding SelectAllCommand}"/>
+
+                <Button
+                    Text="Deselect All"
+                    Command="{Binding DeselectAllCommand}"/>
+            </HorizontalStackLayout>
+        </Grid>
+        
         <Grid
             BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}"
             ColumnDefinitions="Auto, .20*, Auto, .50*, Auto, .30*, Auto"

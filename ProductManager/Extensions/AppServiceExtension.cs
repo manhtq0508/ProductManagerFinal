@@ -18,8 +18,8 @@ public static class ApplicationServiceExtension
         services.AddScoped<IProductRepo, ProductRepo>();
         services.AddScoped<IStoreRepo, StoreRepo>();
 
-        services.AddTransient<LoginPage>();
-        services.AddTransient<LoginViewModel>();
+        services.AddSingleton<LoginPage>();
+        services.AddSingleton<LoginViewModel>();
 
         services.AddSingleton<MainPage>();
         services.AddSingleton<MainViewModel>();
@@ -53,6 +53,9 @@ public static class ApplicationServiceExtension
         services.AddTransient<SelectProductInBillViewModel>();
         services.AddTransient<BillDetailPage>();
         services.AddTransient<BillDetailViewModel>();
+
+        services.AddTransient<ChangeCredentialsPage>();
+        services.AddTransient<ChangeCredentialsViewModel>();
 
         return services;
     }

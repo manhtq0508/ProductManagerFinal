@@ -36,17 +36,33 @@
                 WidthRequest="100"
                 Grid.Column="3" />
             <Button
-                Text="View bills"
+                Text="View Bills"
                 Command="{Binding ViewBillsCommand}"
                 WidthRequest="100"
                 Grid.Column="4" />
         </Grid>
-        
-        <Label
-            Text="Store List"
-            FontSize="Large"
-            FontAttributes="Bold"
-            Grid.Row="1" />
+
+        <Grid
+            ColumnDefinitions=".50*, .50*"
+            Grid.Row="1">
+            <Label
+                Text="Store List"
+                FontSize="Large"
+                FontAttributes="Bold"
+                Grid.Column="0" />
+
+            <HorizontalStackLayout
+                Spacing="10"
+                HorizontalOptions="End"
+                Grid.Column="1">
+                <Button
+                    Text="Select All"
+                    Command="{Binding SelectAllCommand}"/>
+                <Button
+                    Text="Deselect All"
+                    Command="{Binding DeselectAllCommand}"/>
+            </HorizontalStackLayout>
+        </Grid>
 
         <HorizontalStackLayout
             Spacing="5"

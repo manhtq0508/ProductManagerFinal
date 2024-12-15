@@ -111,6 +111,20 @@ public partial class StoreViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void SelectAll()
+    {
+        SelectedStores = new ObservableCollection<object>(_allStore);
+        _selectedLog = new ObservableCollection<object>(_allStore);
+    }
+
+    [RelayCommand]
+    private void DeselectAll()
+    {
+        SelectedStores.Clear();
+        _selectedLog.Clear();
+    }
+
+    [RelayCommand]
     private async Task AddStore()
     {
         await Shell.Current.GoToAsync(nameof(AddStorePage));

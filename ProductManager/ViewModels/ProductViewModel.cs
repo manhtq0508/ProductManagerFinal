@@ -82,6 +82,20 @@ public partial class ProductViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void SelectAll()
+    {
+        SelectedProducts = new ObservableCollection<object>(_allProducts);
+        _selectedLog = new ObservableCollection<object>(_allProducts);
+    }
+
+    [RelayCommand]
+    private void DeselectAll()
+    {
+        SelectedProducts.Clear();
+        _selectedLog.Clear();
+    }
+
+    [RelayCommand]
     private void ItemTapped(Product product)
     {
         if (product == null)

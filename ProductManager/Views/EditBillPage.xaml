@@ -92,6 +92,12 @@
                     Text="Remove"
                     Command="{Binding RemoveProductCommand}"
                     WidthRequest="100" />
+                <Button
+                    Text="Select All"
+                    Command="{Binding SelectAllCommand}"/>
+                <Button
+                    Text="Deselect All" 
+                    Command="{Binding DeselectAllCommand}"/>
             </HorizontalStackLayout>
         </Grid>
         <HorizontalStackLayout

@@ -172,6 +172,20 @@ public partial class BillViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void SelectAll()
+    {
+        SelectedBills = new ObservableCollection<object>(_allBills);
+        _selectedLog = new ObservableCollection<object>(_allBills);
+    }
+
+    [RelayCommand]
+    private void DeselectAll()
+    {
+        SelectedBills.Clear();
+        _selectedLog.Clear();
+    }
+
+    [RelayCommand]
     private void ItemTapped(Bill bill)
     {
         if (bill == null)

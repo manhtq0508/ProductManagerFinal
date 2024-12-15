@@ -95,6 +95,20 @@ public partial class AddBillViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void SelectAll()
+    {
+        SelectedProducts = new ObservableCollection<object>(_allProducts);
+        _selectedLog = new ObservableCollection<object>(_allProducts);
+    }
+
+    [RelayCommand]
+    private void DeselectAll()
+    {
+        SelectedProducts.Clear();
+        _selectedLog.Clear();
+    }
+
+    [RelayCommand]
     private void ItemTapped(ProductInBill product)
     {
         if (product == null)

@@ -73,12 +73,28 @@
                 Time="{Binding ToTime}"/>
         </HorizontalStackLayout>
 
-        <Label
-            Text="Bill List"
-            FontSize="Large"
-            FontAttributes="Bold" 
-            Grid.Row="2"/>
+        <Grid
+            ColumnDefinitions=".50*, .50*"
+            Grid.Row="2">
+            <Label
+                Text="Bill List"
+                FontSize="Large"
+                FontAttributes="Bold" 
+                Grid.Column="0"/>
 
+            <HorizontalStackLayout
+                HorizontalOptions="End"
+                Spacing="10"
+                Grid.Column="1">
+                <Button
+                    Text="Select All" 
+                    Command="{Binding SelectAllCommand}"/>
+                <Button
+                    Text="Deselect All"
+                    Command="{Binding DeselectAllCommand}"/>
+            </HorizontalStackLayout>
+        </Grid>
+        
         <HorizontalStackLayout
             Spacing="5"
             Grid.Row="3">
