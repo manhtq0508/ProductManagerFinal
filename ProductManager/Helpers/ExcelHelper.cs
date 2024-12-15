@@ -3,9 +3,10 @@ using OfficeOpenXml.Style;
 using ProductManager.CombineData;
 using ProductManager.Entities;
 using ProductManager.Interfaces;
+using ProductManager.Services;
 namespace ProductManager.Helpers;
 
-public class ExcelHelper(IStoreRepo storeRepo, IBillRepo billRepo, IProductRepo productRepo, IBillDetailRepo billDetailRepo)
+public class ExcelHelper(DatabaseService _dbService, IStoreRepo storeRepo, IBillRepo billRepo, IProductRepo productRepo, IBillDetailRepo billDetailRepo)
 {
     // Export
     public async Task Export(string path)
@@ -188,13 +189,15 @@ public class ExcelHelper(IStoreRepo storeRepo, IBillRepo billRepo, IProductRepo 
 
         using (var excelPackage = new ExcelPackage(new FileInfo(path)))
         {
-            await ImportStores(excelPackage);
+            var stores = await ImportStores(excelPackage);
             await ImportProducts(excelPackage);
-            await ImportBills(excelPackage);
+            await ImportBills(excelPackage, stores);
         }
+
+        _dbService.AppDbContext.ChangeTracker.Clear();
     }
 
-    private async Task ImportStores(ExcelPackage excelPackage)
+    private async Task<List<Store>> ImportStores(ExcelPackage excelPackage)
     {
         var worksheet = excelPackage.Workbook.Worksheets["Stores"];
         if (worksheet == null)
@@ -221,6 +224,8 @@ public class ExcelHelper(IStoreRepo storeRepo, IBillRepo billRepo, IProductRepo 
         }
 
         await storeRepo.AddListStoresAsync(stores);
+
+        return stores;
     }
 
     private async Task ImportProducts(ExcelPackage excelPackage)
@@ -251,10 +256,8 @@ public class ExcelHelper(IStoreRepo storeRepo, IBillRepo billRepo, IProductRepo 
         await productRepo.AddListProductsAsync(products);
     }
 
-    private async Task ImportBills(ExcelPackage excelPackage)
+    private async Task ImportBills(ExcelPackage excelPackage, List<Store> stores)
     {
-        var stores = await storeRepo.GetStoresAsync();
-
         foreach (var store in stores)
         {
             var worksheet = excelPackage.Workbook.Worksheets[$"{store.Id}_{store.Name}"];

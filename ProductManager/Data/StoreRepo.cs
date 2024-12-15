@@ -62,9 +62,7 @@ public class StoreRepo(DatabaseService dbService) : IStoreRepo
             .FirstOrDefaultAsync(s => s.Id == id);
 
         if (store == null)
-        {
             throw new Exception("Store not found");
-        }
 
         return store;
     }

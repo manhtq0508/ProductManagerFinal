@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Maui.Storage;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ProductManager.Entities;
@@ -57,8 +59,15 @@ public partial class MainViewModel : ObservableObject
 
         try
         {
-            var excelHelper = new ExcelHelper(_storeRepo, _billRepo, _productRepo, _billDetailRepo);
-            await excelHelper.Import(file.FullPath);
+            await Toast.Make($"Importing file\n{file.FullPath}", ToastDuration.Short, 12).Show();
+
+            await Task.Run(async () =>
+            {
+                var excelHelper = new ExcelHelper(_dbService, _storeRepo, _billRepo, _productRepo, _billDetailRepo);
+                await excelHelper.Import(file.FullPath);
+            });
+
+            await Toast.Make($"Import successfully\n{file.FullPath}", ToastDuration.Short, 12).Show();
         }
         catch (Exception ex)
         {
@@ -77,8 +86,15 @@ public partial class MainViewModel : ObservableObject
 
         try
         {
-            var excelHelper = new ExcelHelper(_storeRepo, _billRepo, _productRepo, _billDetailRepo);
-            await excelHelper.Export(file.FilePath);
+            await Toast.Make($"Exporting at\n{file.FilePath}", ToastDuration.Short, 12).Show();
+
+            
+            await Task.Run(async () => {
+                var excelHelper = new ExcelHelper(_dbService, _storeRepo, _billRepo, _productRepo, _billDetailRepo);
+                await excelHelper.Export(file.FilePath);
+            });
+
+            await Toast.Make($"Export successfully at\n{file.FilePath}", ToastDuration.Short, 12).Show();
         }
         catch (Exception ex)
         {
@@ -153,6 +169,8 @@ public partial class MainViewModel : ObservableObject
         await _billDetailRepo.AddListBillDetailAsync(billDetails);
 
         _dbService.AppDbContext.ChangeTracker.Clear();
+
+        await Shell.Current.DisplayAlert("Success", "Demo data generated successfully", "OK");
     }
 
     [RelayCommand]
