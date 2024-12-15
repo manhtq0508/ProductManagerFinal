@@ -144,6 +144,10 @@ public partial class StoreViewModel : ObservableObject
             return;
         }
 
+        var isYes = await Shell.Current.DisplayAlert("Warning", $"Are you sure to delete {SelectedStores.Count} store(s)?", "Yes", "No");
+        if (!isYes)
+            return;
+
         try
         {
             List<Store> storeList = new List<Store>();

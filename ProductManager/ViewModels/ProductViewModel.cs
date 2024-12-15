@@ -129,6 +129,10 @@ public partial class ProductViewModel : ObservableObject
             return;
         }
 
+        var isYes = await Shell.Current.DisplayAlert("Warning", $"Are you sure to delete {SelectedProducts.Count} product(s)?", "Yes", "No");
+        if (!isYes)
+            return;
+
         try
         {
             List<Product> products = new List<Product>();

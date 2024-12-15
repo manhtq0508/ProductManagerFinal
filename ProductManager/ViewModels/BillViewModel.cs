@@ -226,6 +226,10 @@ public partial class BillViewModel : ObservableObject
             return;
         }
 
+        var isYes = await Shell.Current.DisplayAlert("Warning", $"Are you sure to delete {SelectedBills.Count} bill(s)?", "Yes", "No");
+        if (!isYes)
+            return;
+
         try
         {
             List<Bill> bills = new List<Bill>();

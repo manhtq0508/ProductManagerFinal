@@ -35,7 +35,7 @@ public partial class LoginViewModel : ObservableObject
 
                 // IMPORTANT: This line is used prevent UI from blocking when navigating to MainPage
                 // Remove it will make LogingInScreen not showing
-                await Task.Delay(10);
+                await Task.Delay(100);
 
                 await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
             }
