@@ -21,7 +21,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .HasForeignKey(b => b.StoreId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // If delete product, delete all billNeedEdit details of that product
+        // If delete product, delete all bill details of that product
         modelBuilder.Entity<BillDetail>()
             .HasOne(bd => bd.Product)
             .WithMany(p => p.BillDetails)
